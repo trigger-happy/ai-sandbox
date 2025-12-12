@@ -1,0 +1,450 @@
+import { Button, VerticalBox, HorizontalBox, LineEdit, CheckBox, ComboBox, Slider, SpinBox, TabWidget, GridBox } from "std-widgets.slint";
+
+export component AppWindow inherits Window {
+    title: "Slint Test Application";
+    preferred-width: 800px;
+    preferred-height: 600px;
+
+    // Properties for interaction
+    in-out property <string> input-text: "Hello, Slint!";
+    in-out property <bool> checkbox-state: false;
+    in-out property <float> slider-value: 50;
+    in-out property <int> counter: 0;
+    in-out property <string> status-message: "Ready";
+    in-out property <string> combo-value: "Option 1";
+
+    // Callback for button clicks
+    callback button-clicked();
+    callback increment-counter();
+    callback reset-counter();
+
+    button-clicked => {
+        status-message = "Button clicked! Counter: " + counter;
+    }
+
+    increment-counter => {
+        counter += 1;
+        status-message = "Counter incremented to: " + counter;
+    }
+
+    reset-counter => {
+        counter = 0;
+        status-message = "Counter reset to 0";
+    }
+
+    VerticalBox {
+        padding: 20px;
+        spacing: 10px;
+
+        // Header
+        Text {
+            text: "Slint Component Test Suite";
+            font-size: 24px;
+            font-weight: 700;
+            horizontal-alignment: center;
+        }
+
+        // Status bar
+        Rectangle {
+            height: 40px;
+            background: #e0e0e0;
+            border-radius: 5px;
+
+            Text {
+                text: status-message;
+                vertical-alignment: center;
+                horizontal-alignment: center;
+                font-size: 14px;
+            }
+        }
+
+        // Tab Widget for different component groups
+        TabWidget {
+            Tab {
+                title: "Buttons & Text";
+
+                VerticalBox {
+                    spacing: 20px;
+                    padding: 15px;
+
+                    // Button Section
+                    Rectangle {
+                        height: 120px;
+                        border-width: 1px;
+                        border-color: #cccccc;
+                        border-radius: 5px;
+
+                        VerticalBox {
+                            padding: 10px;
+                            spacing: 10px;
+
+                            Text {
+                                text: "Buttons";
+                                font-size: 16px;
+                                font-weight: 700;
+                            }
+
+                            HorizontalBox {
+                                spacing: 10px;
+
+                                Button {
+                                    text: "Click Me!";
+                                    clicked => {
+                                        root.button-clicked();
+                                    }
+                                }
+
+                                Button {
+                                    text: "Increment";
+                                    clicked => {
+                                        root.increment-counter();
+                                    }
+                                }
+
+                                Button {
+                                    text: "Reset";
+                                    clicked => {
+                                        root.reset-counter();
+                                    }
+                                }
+                            }
+
+                            Text {
+                                text: "Counter: " + counter;
+                                font-size: 14px;
+                            }
+                        }
+                    }
+
+                    // Text Input Section
+                    Rectangle {
+                        height: 100px;
+                        border-width: 1px;
+                        border-color: #cccccc;
+                        border-radius: 5px;
+
+                        VerticalBox {
+                            padding: 10px;
+                            spacing: 10px;
+
+                            Text {
+                                text: "Text Input";
+                                font-size: 16px;
+                                font-weight: 700;
+                            }
+
+                            LineEdit {
+                                text <=> input-text;
+                                placeholder-text: "Enter text here...";
+                            }
+
+                            Text {
+                                text: "You entered: " + input-text;
+                            }
+                        }
+                    }
+
+                    // CheckBox Section
+                    Rectangle {
+                        height: 80px;
+                        border-width: 1px;
+                        border-color: #cccccc;
+                        border-radius: 5px;
+
+                        VerticalBox {
+                            padding: 10px;
+                            spacing: 10px;
+
+                            Text {
+                                text: "CheckBox";
+                                font-size: 16px;
+                                font-weight: 700;
+                            }
+
+                            HorizontalBox {
+                                spacing: 15px;
+
+                                CheckBox {
+                                    text: "Enable Feature";
+                                    checked <=> checkbox-state;
+                                }
+
+                                Text {
+                                    text: checkbox-state ? "ENABLED" : "DISABLED";
+                                    color: checkbox-state ? #00aa00 : #aa0000;
+                                    font-weight: 700;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Tab {
+                title: "Sliders";
+
+                VerticalBox {
+                    spacing: 20px;
+                    padding: 15px;
+
+                    // Slider Section
+                    Rectangle {
+                        height: 140px;
+                        border-width: 1px;
+                        border-color: #cccccc;
+                        border-radius: 5px;
+
+                        VerticalBox {
+                            padding: 10px;
+                            spacing: 10px;
+
+                            Text {
+                                text: "Slider";
+                                font-size: 16px;
+                                font-weight: 700;
+                            }
+
+                            Slider {
+                                value <=> slider-value;
+                                minimum: 0;
+                                maximum: 100;
+                            }
+
+                            Text {
+                                text: "Value: " + Math.round(slider-value);
+                            }
+
+                            Rectangle {
+                                height: 30px;
+                                background: #ecf0f1;
+                                border-radius: 5px;
+
+                                Rectangle {
+                                    width: parent.width * slider-value / 100;
+                                    height: parent.height;
+                                    background: #3498db;
+                                    border-radius: 5px;
+                                }
+                            }
+                        }
+                    }
+
+                    // SpinBox Section
+                    Rectangle {
+                        height: 80px;
+                        border-width: 1px;
+                        border-color: #cccccc;
+                        border-radius: 5px;
+
+                        VerticalBox {
+                            padding: 10px;
+                            spacing: 10px;
+
+                            Text {
+                                text: "SpinBox";
+                                font-size: 16px;
+                                font-weight: 700;
+                            }
+
+                            SpinBox {
+                                value: 25;
+                                minimum: 0;
+                                maximum: 100;
+                            }
+                        }
+                    }
+
+                    // ComboBox Section
+                    Rectangle {
+                        height: 80px;
+                        border-width: 1px;
+                        border-color: #cccccc;
+                        border-radius: 5px;
+
+                        VerticalBox {
+                            padding: 10px;
+                            spacing: 10px;
+
+                            Text {
+                                text: "ComboBox";
+                                font-size: 16px;
+                                font-weight: 700;
+                            }
+
+                            ComboBox {
+                                model: ["Option 1", "Option 2", "Option 3", "Option 4"];
+                                current-value <=> combo-value;
+                            }
+                        }
+                    }
+                }
+            }
+
+            Tab {
+                title: "Visual";
+
+                VerticalBox {
+                    spacing: 20px;
+                    padding: 15px;
+
+                    // Color Palette
+                    Rectangle {
+                        height: 120px;
+                        border-width: 1px;
+                        border-color: #cccccc;
+                        border-radius: 5px;
+
+                        VerticalBox {
+                            padding: 10px;
+                            spacing: 10px;
+
+                            Text {
+                                text: "Color Palette";
+                                font-size: 16px;
+                                font-weight: 700;
+                            }
+
+                            HorizontalBox {
+                                spacing: 10px;
+                                alignment: center;
+
+                                Rectangle {
+                                    width: 70px;
+                                    height: 70px;
+                                    background: #e74c3c;
+                                    border-radius: 10px;
+                                }
+
+                                Rectangle {
+                                    width: 70px;
+                                    height: 70px;
+                                    background: #3498db;
+                                    border-radius: 10px;
+                                }
+
+                                Rectangle {
+                                    width: 70px;
+                                    height: 70px;
+                                    background: #2ecc71;
+                                    border-radius: 10px;
+                                }
+
+                                Rectangle {
+                                    width: 70px;
+                                    height: 70px;
+                                    background: #f39c12;
+                                    border-radius: 10px;
+                                }
+
+                                Rectangle {
+                                    width: 70px;
+                                    height: 70px;
+                                    background: #9b59b6;
+                                    border-radius: 10px;
+                                }
+                            }
+                        }
+                    }
+
+                    // Text Styles
+                    Rectangle {
+                        height: 140px;
+                        border-width: 1px;
+                        border-color: #cccccc;
+                        border-radius: 5px;
+
+                        VerticalBox {
+                            padding: 10px;
+                            spacing: 8px;
+
+                            Text {
+                                text: "Text Styles";
+                                font-size: 16px;
+                                font-weight: 700;
+                            }
+
+                            Text {
+                                text: "Normal Text (14px)";
+                                font-size: 14px;
+                            }
+
+                            Text {
+                                text: "Bold Text (14px)";
+                                font-size: 14px;
+                                font-weight: 700;
+                            }
+
+                            Text {
+                                text: "Large Text (20px)";
+                                font-size: 20px;
+                            }
+
+                            Text {
+                                text: "Colored Text (Purple)";
+                                font-size: 14px;
+                                color: #9b59b6;
+                            }
+                        }
+                    }
+
+                    // Progress Bar
+                    Rectangle {
+                        height: 90px;
+                        border-width: 1px;
+                        border-color: #cccccc;
+                        border-radius: 5px;
+
+                        VerticalBox {
+                            padding: 10px;
+                            spacing: 10px;
+
+                            Text {
+                                text: "Progress Indicator";
+                                font-size: 16px;
+                                font-weight: 700;
+                            }
+
+                            Rectangle {
+                                height: 25px;
+                                background: #ecf0f1;
+                                border-radius: 12px;
+
+                                Rectangle {
+                                    width: parent.width * slider-value / 100;
+                                    height: parent.height;
+                                    background: #27ae60;
+                                    border-radius: 12px;
+                                }
+                            }
+
+                            Text {
+                                text: "Progress: " + Math.round(slider-value) + "% (linked to slider)";
+                                horizontal-alignment: center;
+                                font-size: 12px;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Footer
+        HorizontalBox {
+            height: 30px;
+            alignment: space-between;
+
+            Text {
+                text: "Slint v1.9 Test Suite";
+                color: #7f8c8d;
+                font-size: 12px;
+            }
+
+            Text {
+                text: "Web Server Running on :3000";
+                color: #27ae60;
+                font-weight: 700;
+                font-size: 12px;
+            }
+        }
+    }
+}
