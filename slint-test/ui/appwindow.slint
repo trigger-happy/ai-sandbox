@@ -1,426 +1,1026 @@
-import { Button, VerticalBox, HorizontalBox, LineEdit, CheckBox, ComboBox, Slider, SpinBox, TabWidget, GridBox } from "std-widgets.slint";
+import { Button, VerticalBox, HorizontalBox, LineEdit, CheckBox, ComboBox, Slider, SpinBox, TabWidget, GridBox, ScrollView } from "std-widgets.slint";
+
+// ============================================================================
+// THEME & COLORS
+// ============================================================================
+
+global Theme {
+    // Primary palette - Modern blue gradient tones
+    out property <color> primary: #6366f1;
+    out property <color> primary-light: #818cf8;
+    out property <color> primary-dark: #4f46e5;
+
+    // Accent colors
+    out property <color> accent-green: #10b981;
+    out property <color> accent-red: #ef4444;
+    out property <color> accent-orange: #f59e0b;
+    out property <color> accent-purple: #8b5cf6;
+    out property <color> accent-cyan: #06b6d4;
+    out property <color> accent-pink: #ec4899;
+
+    // Neutrals
+    out property <color> background: #0f172a;
+    out property <color> surface: #1e293b;
+    out property <color> surface-light: #334155;
+    out property <color> surface-lighter: #475569;
+    out property <color> border: #334155;
+    out property <color> border-light: #475569;
+
+    // Text colors
+    out property <color> text-primary: #f1f5f9;
+    out property <color> text-secondary: #94a3b8;
+    out property <color> text-muted: #64748b;
+
+    // Spacing
+    out property <length> spacing-xs: 4px;
+    out property <length> spacing-sm: 8px;
+    out property <length> spacing-md: 16px;
+    out property <length> spacing-lg: 24px;
+    out property <length> spacing-xl: 32px;
+
+    // Border radius
+    out property <length> radius-sm: 6px;
+    out property <length> radius-md: 10px;
+    out property <length> radius-lg: 16px;
+    out property <length> radius-xl: 24px;
+}
+
+// ============================================================================
+// CUSTOM COMPONENTS
+// ============================================================================
+
+// Styled Card Component
+component Card inherits Rectangle {
+    in property <string> card-title: "";
+    in property <bool> show-header: true;
+
+    background: Theme.surface;
+    border-radius: Theme.radius-lg;
+    clip: true;
+
+    // Subtle glow effect
+    Rectangle {
+        x: 0;
+        y: 0;
+        width: parent.width;
+        height: 2px;
+        background: @linear-gradient(90deg, Theme.primary-light 0%, Theme.accent-purple 50%, Theme.accent-cyan 100%);
+        opacity: 0.6;
+    }
+
+    VerticalLayout {
+        padding: Theme.spacing-md;
+        spacing: Theme.spacing-md;
+
+        if show-header && card-title != "" : HorizontalLayout {
+            spacing: Theme.spacing-sm;
+
+            Rectangle {
+                width: 4px;
+                height: 20px;
+                background: Theme.primary;
+                border-radius: 2px;
+            }
+
+            Text {
+                text: card-title;
+                font-size: 15px;
+                font-weight: 600;
+                color: Theme.text-primary;
+                vertical-alignment: center;
+            }
+        }
+
+        @children
+    }
+}
+
+// Modern styled button
+component StyledButton inherits Rectangle {
+    in property <string> label: "Button";
+    in property <color> btn-color: Theme.primary;
+    in property <bool> outline: false;
+
+    callback clicked();
+
+    min-width: 100px;
+    height: 38px;
+    border-radius: Theme.radius-md;
+    background: outline ? transparent : btn-color;
+    border-width: outline ? 2px : 0px;
+    border-color: btn-color;
+
+    animate background { duration: 150ms; easing: ease-out; }
+    animate border-color { duration: 150ms; easing: ease-out; }
+
+    states [
+        pressed when touch.pressed : {
+            background: outline ? btn-color.with-alpha(0.2) : btn-color.darker(20%);
+        }
+        hovered when touch.has-hover : {
+            background: outline ? btn-color.with-alpha(0.1) : btn-color.darker(10%);
+        }
+    ]
+
+    touch := TouchArea {
+        clicked => { root.clicked(); }
+    }
+
+    HorizontalLayout {
+        padding-left: Theme.spacing-md;
+        padding-right: Theme.spacing-md;
+
+        Text {
+            text: label;
+            font-size: 14px;
+            font-weight: 600;
+            color: outline ? btn-color : Theme.text-primary;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+        }
+    }
+}
+
+// Badge/Pill component
+component Badge inherits Rectangle {
+    in property <string> text: "";
+    in property <color> badge-color: Theme.accent-green;
+
+    height: 24px;
+    border-radius: 12px;
+    background: badge-color.with-alpha(0.2);
+
+    HorizontalLayout {
+        padding-left: Theme.spacing-sm;
+        padding-right: Theme.spacing-sm;
+
+        Text {
+            text: root.text;
+            font-size: 12px;
+            font-weight: 600;
+            color: badge-color;
+            vertical-alignment: center;
+        }
+    }
+}
+
+// Animated Progress Bar
+component ProgressBar inherits Rectangle {
+    in property <float> value: 0;
+    in property <color> progress-color: Theme.accent-green;
+
+    height: 8px;
+    background: Theme.surface-light;
+    border-radius: 4px;
+    clip: true;
+
+    Rectangle {
+        x: 0;
+        width: parent.width * clamp(value / 100, 0, 1);
+        height: parent.height;
+        border-radius: 4px;
+        background: progress-color;
+
+        animate width { duration: 200ms; easing: ease-out; }
+
+        // Shimmer effect
+        Rectangle {
+            x: parent.width - 30px;
+            width: 30px;
+            height: parent.height;
+            background: @linear-gradient(90deg, transparent 0%, white.with-alpha(0.3) 50%, transparent 100%);
+        }
+    }
+}
+
+// Stat display component
+component StatDisplay inherits Rectangle {
+    in property <string> label: "";
+    in property <string> value: "";
+    in property <color> value-color: Theme.primary-light;
+
+    background: Theme.surface-light;
+    border-radius: Theme.radius-md;
+    height: 70px;
+
+    VerticalLayout {
+        padding: Theme.spacing-md;
+        spacing: Theme.spacing-xs;
+
+        Text {
+            text: label;
+            font-size: 12px;
+            font-weight: 500;
+            color: Theme.text-muted;
+        }
+
+        Text {
+            text: value;
+            font-size: 24px;
+            font-weight: 700;
+            color: value-color;
+        }
+    }
+}
+
+// Color swatch with hover effect
+component ColorSwatch inherits Rectangle {
+    in property <color> swatch-color: Theme.primary;
+    in property <string> color-name: "";
+
+    width: 80px;
+    height: 80px;
+    border-radius: Theme.radius-lg;
+    background: swatch-color;
+    clip: true;
+
+    animate border-width { duration: 150ms; }
+
+    states [
+        hovered when touch.has-hover : {
+            border-width: 3px;
+            border-color: white;
+        }
+    ]
+
+    touch := TouchArea {}
+
+    // Label at bottom
+    Rectangle {
+        y: parent.height - 24px;
+        width: parent.width;
+        height: 24px;
+        background: black.with-alpha(0.4);
+
+        Text {
+            text: color-name;
+            font-size: 10px;
+            font-weight: 600;
+            color: white;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+        }
+    }
+}
+
+// ============================================================================
+// MAIN APPLICATION
+// ============================================================================
 
 export component AppWindow inherits Window {
-    title: "Slint Test Application";
-    preferred-width: 800px;
-    preferred-height: 600px;
+    title: "Slint Modern UI Demo";
+    preferred-width: 900px;
+    preferred-height: 700px;
+    background: Theme.background;
 
     // Properties for interaction
     in-out property <string> input-text: "Hello, Slint!";
     in-out property <bool> checkbox-state: false;
-    in-out property <float> slider-value: 50;
+    in-out property <bool> dark-mode: true;
+    in-out property <float> slider-value: 65;
     in-out property <int> counter: 0;
-    in-out property <string> status-message: "Ready";
+    in-out property <string> status-message: "Welcome! Try interacting with the components.";
     in-out property <string> combo-value: "Option 1";
+    in-out property <int> spinbox-value: 25;
 
-    // Callback for button clicks
+    // Callbacks
     callback button-clicked();
     callback increment-counter();
     callback reset-counter();
 
     button-clicked => {
-        status-message = "Button clicked! Counter: " + counter;
+        status-message = "Button clicked! Total clicks: " + counter;
     }
 
     increment-counter => {
         counter += 1;
-        status-message = "Counter incremented to: " + counter;
+        status-message = "Counter incremented to " + counter;
     }
 
     reset-counter => {
         counter = 0;
-        status-message = "Counter reset to 0";
+        status-message = "Counter has been reset";
     }
 
-    VerticalBox {
-        padding: 20px;
-        spacing: 10px;
+    // Main Layout
+    VerticalLayout {
+        padding: 0;
+        spacing: 0;
 
-        // Header
-        Text {
-            text: "Slint Component Test Suite";
-            font-size: 24px;
-            font-weight: 700;
-            horizontal-alignment: center;
-        }
-
-        // Status bar
+        // Header Bar
         Rectangle {
-            height: 40px;
-            background: #e0e0e0;
-            border-radius: 5px;
+            height: 70px;
+            background: @linear-gradient(135deg, Theme.surface 0%, Theme.surface-light 100%);
 
-            Text {
-                text: status-message;
-                vertical-alignment: center;
-                horizontal-alignment: center;
-                font-size: 14px;
+            // Bottom border gradient
+            Rectangle {
+                y: parent.height - 1px;
+                width: parent.width;
+                height: 1px;
+                background: @linear-gradient(90deg, Theme.primary 0%, Theme.accent-purple 50%, Theme.accent-cyan 100%);
+            }
+
+            HorizontalLayout {
+                padding-left: Theme.spacing-lg;
+                padding-right: Theme.spacing-lg;
+                spacing: Theme.spacing-md;
+
+                // Logo/Title area
+                HorizontalLayout {
+                    spacing: Theme.spacing-md;
+
+                    // App icon
+                    Rectangle {
+                        width: 40px;
+                        height: 40px;
+                        border-radius: Theme.radius-md;
+                        background: @linear-gradient(135deg, Theme.primary 0%, Theme.accent-purple 100%);
+
+                        Text {
+                            text: "S";
+                            font-size: 22px;
+                            font-weight: 700;
+                            color: white;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
+                    }
+
+                    VerticalLayout {
+                        alignment: center;
+                        spacing: 2px;
+
+                        Text {
+                            text: "Slint UI Demo";
+                            font-size: 18px;
+                            font-weight: 700;
+                            color: Theme.text-primary;
+                        }
+
+                        Text {
+                            text: "Modern Component Showcase";
+                            font-size: 12px;
+                            color: Theme.text-muted;
+                        }
+                    }
+                }
+
+                Rectangle { horizontal-stretch: 1; }
+
+                // Status badge
+                VerticalLayout {
+                    alignment: center;
+                    Badge {
+                        text: "v1.9";
+                        badge-color: Theme.accent-cyan;
+                    }
+                }
+
+                VerticalLayout {
+                    alignment: center;
+                    Badge {
+                        text: dark-mode ? "Dark Mode" : "Light Mode";
+                        badge-color: dark-mode ? Theme.accent-purple : Theme.accent-orange;
+                    }
+                }
             }
         }
 
-        // Tab Widget for different component groups
-        TabWidget {
-            Tab {
-                title: "Buttons & Text";
+        // Status Message Bar
+        Rectangle {
+            height: 44px;
+            background: Theme.surface;
 
-                VerticalBox {
-                    spacing: 20px;
-                    padding: 15px;
+            HorizontalLayout {
+                padding-left: Theme.spacing-lg;
+                padding-right: Theme.spacing-lg;
+                spacing: Theme.spacing-sm;
 
-                    // Button Section
+                VerticalLayout {
+                    alignment: center;
                     Rectangle {
-                        height: 120px;
-                        border-width: 1px;
-                        border-color: #cccccc;
-                        border-radius: 5px;
+                        width: 8px;
+                        height: 8px;
+                        border-radius: 4px;
+                        background: Theme.accent-green;
 
-                        VerticalBox {
-                            padding: 10px;
-                            spacing: 10px;
-
-                            Text {
-                                text: "Buttons";
-                                font-size: 16px;
-                                font-weight: 700;
-                            }
-
-                            HorizontalBox {
-                                spacing: 10px;
-
-                                Button {
-                                    text: "Click Me!";
-                                    clicked => {
-                                        root.button-clicked();
-                                    }
-                                }
-
-                                Button {
-                                    text: "Increment";
-                                    clicked => {
-                                        root.increment-counter();
-                                    }
-                                }
-
-                                Button {
-                                    text: "Reset";
-                                    clicked => {
-                                        root.reset-counter();
-                                    }
-                                }
-                            }
-
-                            Text {
-                                text: "Counter: " + counter;
-                                font-size: 14px;
-                            }
-                        }
-                    }
-
-                    // Text Input Section
-                    Rectangle {
-                        height: 100px;
-                        border-width: 1px;
-                        border-color: #cccccc;
-                        border-radius: 5px;
-
-                        VerticalBox {
-                            padding: 10px;
-                            spacing: 10px;
-
-                            Text {
-                                text: "Text Input";
-                                font-size: 16px;
-                                font-weight: 700;
-                            }
-
-                            LineEdit {
-                                text <=> input-text;
-                                placeholder-text: "Enter text here...";
-                            }
-
-                            Text {
-                                text: "You entered: " + input-text;
-                            }
-                        }
-                    }
-
-                    // CheckBox Section
-                    Rectangle {
-                        height: 80px;
-                        border-width: 1px;
-                        border-color: #cccccc;
-                        border-radius: 5px;
-
-                        VerticalBox {
-                            padding: 10px;
-                            spacing: 10px;
-
-                            Text {
-                                text: "CheckBox";
-                                font-size: 16px;
-                                font-weight: 700;
-                            }
-
-                            HorizontalBox {
-                                spacing: 15px;
-
-                                CheckBox {
-                                    text: "Enable Feature";
-                                    checked <=> checkbox-state;
-                                }
-
-                                Text {
-                                    text: checkbox-state ? "ENABLED" : "DISABLED";
-                                    color: checkbox-state ? #00aa00 : #aa0000;
-                                    font-weight: 700;
-                                }
-                            }
-                        }
+                        // Pulse animation placeholder
+                        animate opacity { duration: 1000ms; }
                     }
                 }
-            }
 
-            Tab {
-                title: "Sliders";
-
-                VerticalBox {
-                    spacing: 20px;
-                    padding: 15px;
-
-                    // Slider Section
-                    Rectangle {
-                        height: 140px;
-                        border-width: 1px;
-                        border-color: #cccccc;
-                        border-radius: 5px;
-
-                        VerticalBox {
-                            padding: 10px;
-                            spacing: 10px;
-
-                            Text {
-                                text: "Slider";
-                                font-size: 16px;
-                                font-weight: 700;
-                            }
-
-                            Slider {
-                                value <=> slider-value;
-                                minimum: 0;
-                                maximum: 100;
-                            }
-
-                            Text {
-                                text: "Value: " + Math.round(slider-value);
-                            }
-
-                            Rectangle {
-                                height: 30px;
-                                background: #ecf0f1;
-                                border-radius: 5px;
-
-                                Rectangle {
-                                    width: parent.width * slider-value / 100;
-                                    height: parent.height;
-                                    background: #3498db;
-                                    border-radius: 5px;
-                                }
-                            }
-                        }
-                    }
-
-                    // SpinBox Section
-                    Rectangle {
-                        height: 80px;
-                        border-width: 1px;
-                        border-color: #cccccc;
-                        border-radius: 5px;
-
-                        VerticalBox {
-                            padding: 10px;
-                            spacing: 10px;
-
-                            Text {
-                                text: "SpinBox";
-                                font-size: 16px;
-                                font-weight: 700;
-                            }
-
-                            SpinBox {
-                                value: 25;
-                                minimum: 0;
-                                maximum: 100;
-                            }
-                        }
-                    }
-
-                    // ComboBox Section
-                    Rectangle {
-                        height: 80px;
-                        border-width: 1px;
-                        border-color: #cccccc;
-                        border-radius: 5px;
-
-                        VerticalBox {
-                            padding: 10px;
-                            spacing: 10px;
-
-                            Text {
-                                text: "ComboBox";
-                                font-size: 16px;
-                                font-weight: 700;
-                            }
-
-                            ComboBox {
-                                model: ["Option 1", "Option 2", "Option 3", "Option 4"];
-                                current-value <=> combo-value;
-                            }
-                        }
-                    }
+                Text {
+                    text: status-message;
+                    font-size: 13px;
+                    color: Theme.text-secondary;
+                    vertical-alignment: center;
                 }
             }
+        }
 
-            Tab {
-                title: "Visual";
+        // Main Content Area
+        Rectangle {
+            background: Theme.background;
+            vertical-stretch: 1;
 
-                VerticalBox {
-                    spacing: 20px;
-                    padding: 15px;
+            ScrollView {
+                VerticalLayout {
+                    padding: Theme.spacing-lg;
+                    spacing: Theme.spacing-lg;
 
-                    // Color Palette
-                    Rectangle {
-                        height: 120px;
-                        border-width: 1px;
-                        border-color: #cccccc;
-                        border-radius: 5px;
+                    // Stats Row
+                    HorizontalLayout {
+                        spacing: Theme.spacing-md;
 
-                        VerticalBox {
-                            padding: 10px;
-                            spacing: 10px;
+                        StatDisplay {
+                            horizontal-stretch: 1;
+                            label: "COUNTER";
+                            value: counter;
+                            value-color: Theme.primary-light;
+                        }
 
-                            Text {
-                                text: "Color Palette";
-                                font-size: 16px;
-                                font-weight: 700;
-                            }
+                        StatDisplay {
+                            horizontal-stretch: 1;
+                            label: "SLIDER";
+                            value: Math.round(slider-value) + "%";
+                            value-color: Theme.accent-green;
+                        }
 
-                            HorizontalBox {
-                                spacing: 10px;
-                                alignment: center;
+                        StatDisplay {
+                            horizontal-stretch: 1;
+                            label: "SPINBOX";
+                            value: spinbox-value;
+                            value-color: Theme.accent-orange;
+                        }
 
-                                Rectangle {
-                                    width: 70px;
-                                    height: 70px;
-                                    background: #e74c3c;
-                                    border-radius: 10px;
-                                }
-
-                                Rectangle {
-                                    width: 70px;
-                                    height: 70px;
-                                    background: #3498db;
-                                    border-radius: 10px;
-                                }
-
-                                Rectangle {
-                                    width: 70px;
-                                    height: 70px;
-                                    background: #2ecc71;
-                                    border-radius: 10px;
-                                }
-
-                                Rectangle {
-                                    width: 70px;
-                                    height: 70px;
-                                    background: #f39c12;
-                                    border-radius: 10px;
-                                }
-
-                                Rectangle {
-                                    width: 70px;
-                                    height: 70px;
-                                    background: #9b59b6;
-                                    border-radius: 10px;
-                                }
-                            }
+                        StatDisplay {
+                            horizontal-stretch: 1;
+                            label: "STATUS";
+                            value: checkbox-state ? "ON" : "OFF";
+                            value-color: checkbox-state ? Theme.accent-green : Theme.accent-red;
                         }
                     }
 
-                    // Text Styles
-                    Rectangle {
-                        height: 140px;
-                        border-width: 1px;
-                        border-color: #cccccc;
-                        border-radius: 5px;
+                    // Tab Widget
+                    TabWidget {
+                        Tab {
+                            title: "Controls";
 
-                        VerticalBox {
-                            padding: 10px;
-                            spacing: 8px;
+                            ScrollView {
+                                VerticalLayout {
+                                    padding: Theme.spacing-md;
+                                    spacing: Theme.spacing-lg;
 
-                            Text {
-                                text: "Text Styles";
-                                font-size: 16px;
-                                font-weight: 700;
-                            }
+                                    // Buttons Section
+                                    Card {
+                                        card-title: "Interactive Buttons";
 
-                            Text {
-                                text: "Normal Text (14px)";
-                                font-size: 14px;
-                            }
+                                        VerticalLayout {
+                                            spacing: Theme.spacing-md;
 
-                            Text {
-                                text: "Bold Text (14px)";
-                                font-size: 14px;
-                                font-weight: 700;
-                            }
+                                            Text {
+                                                text: "Click the buttons below to interact with the counter:";
+                                                font-size: 13px;
+                                                color: Theme.text-secondary;
+                                                wrap: word-wrap;
+                                            }
 
-                            Text {
-                                text: "Large Text (20px)";
-                                font-size: 20px;
-                            }
+                                            HorizontalLayout {
+                                                spacing: Theme.spacing-md;
 
-                            Text {
-                                text: "Colored Text (Purple)";
-                                font-size: 14px;
-                                color: #9b59b6;
-                            }
-                        }
-                    }
+                                                StyledButton {
+                                                    label: "Click Me";
+                                                    btn-color: Theme.primary;
+                                                    clicked => { root.button-clicked(); }
+                                                }
 
-                    // Progress Bar
-                    Rectangle {
-                        height: 90px;
-                        border-width: 1px;
-                        border-color: #cccccc;
-                        border-radius: 5px;
+                                                StyledButton {
+                                                    label: "+ Increment";
+                                                    btn-color: Theme.accent-green;
+                                                    clicked => { root.increment-counter(); }
+                                                }
 
-                        VerticalBox {
-                            padding: 10px;
-                            spacing: 10px;
+                                                StyledButton {
+                                                    label: "Reset";
+                                                    btn-color: Theme.accent-red;
+                                                    outline: true;
+                                                    clicked => { root.reset-counter(); }
+                                                }
+                                            }
 
-                            Text {
-                                text: "Progress Indicator";
-                                font-size: 16px;
-                                font-weight: 700;
-                            }
+                                            // Counter display
+                                            Rectangle {
+                                                height: 50px;
+                                                background: Theme.surface-light;
+                                                border-radius: Theme.radius-md;
 
-                            Rectangle {
-                                height: 25px;
-                                background: #ecf0f1;
-                                border-radius: 12px;
+                                                HorizontalLayout {
+                                                    padding: Theme.spacing-md;
 
-                                Rectangle {
-                                    width: parent.width * slider-value / 100;
-                                    height: parent.height;
-                                    background: #27ae60;
-                                    border-radius: 12px;
+                                                    Text {
+                                                        text: "Current Count:";
+                                                        font-size: 14px;
+                                                        color: Theme.text-secondary;
+                                                        vertical-alignment: center;
+                                                    }
+
+                                                    Rectangle { horizontal-stretch: 1; }
+
+                                                    Text {
+                                                        text: counter;
+                                                        font-size: 28px;
+                                                        font-weight: 700;
+                                                        color: Theme.primary-light;
+                                                        vertical-alignment: center;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    // Text Input Section
+                                    Card {
+                                        card-title: "Text Input";
+
+                                        VerticalLayout {
+                                            spacing: Theme.spacing-md;
+
+                                            LineEdit {
+                                                text <=> input-text;
+                                                placeholder-text: "Type something here...";
+                                            }
+
+                                            Rectangle {
+                                                height: 40px;
+                                                background: Theme.surface-light;
+                                                border-radius: Theme.radius-md;
+
+                                                HorizontalLayout {
+                                                    padding-left: Theme.spacing-md;
+                                                    padding-right: Theme.spacing-md;
+
+                                                    Text {
+                                                        text: "You typed: ";
+                                                        font-size: 13px;
+                                                        color: Theme.text-muted;
+                                                        vertical-alignment: center;
+                                                    }
+
+                                                    Text {
+                                                        text: input-text;
+                                                        font-size: 13px;
+                                                        font-weight: 600;
+                                                        color: Theme.text-primary;
+                                                        vertical-alignment: center;
+                                                        overflow: elide;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    // Toggle Section
+                                    Card {
+                                        card-title: "Toggle Switch";
+
+                                        HorizontalLayout {
+                                            spacing: Theme.spacing-lg;
+
+                                            CheckBox {
+                                                text: "Enable Feature";
+                                                checked <=> checkbox-state;
+                                            }
+
+                                            Rectangle { horizontal-stretch: 1; }
+
+                                            Badge {
+                                                text: checkbox-state ? "ENABLED" : "DISABLED";
+                                                badge-color: checkbox-state ? Theme.accent-green : Theme.accent-red;
+                                            }
+                                        }
+                                    }
                                 }
                             }
+                        }
 
-                            Text {
-                                text: "Progress: " + Math.round(slider-value) + "% (linked to slider)";
-                                horizontal-alignment: center;
-                                font-size: 12px;
+                        Tab {
+                            title: "Sliders & Inputs";
+
+                            ScrollView {
+                                VerticalLayout {
+                                    padding: Theme.spacing-md;
+                                    spacing: Theme.spacing-lg;
+
+                                    // Slider Section
+                                    Card {
+                                        card-title: "Slider Control";
+
+                                        VerticalLayout {
+                                            spacing: Theme.spacing-md;
+
+                                            Slider {
+                                                value <=> slider-value;
+                                                minimum: 0;
+                                                maximum: 100;
+                                            }
+
+                                            HorizontalLayout {
+                                                Text {
+                                                    text: "0";
+                                                    font-size: 12px;
+                                                    color: Theme.text-muted;
+                                                }
+                                                Rectangle { horizontal-stretch: 1; }
+                                                Text {
+                                                    text: Math.round(slider-value) + "%";
+                                                    font-size: 14px;
+                                                    font-weight: 600;
+                                                    color: Theme.primary-light;
+                                                }
+                                                Rectangle { horizontal-stretch: 1; }
+                                                Text {
+                                                    text: "100";
+                                                    font-size: 12px;
+                                                    color: Theme.text-muted;
+                                                }
+                                            }
+
+                                            // Progress visualization
+                                            VerticalLayout {
+                                                spacing: Theme.spacing-sm;
+
+                                                Text {
+                                                    text: "Progress Visualization";
+                                                    font-size: 12px;
+                                                    color: Theme.text-muted;
+                                                }
+
+                                                ProgressBar {
+                                                    value: slider-value;
+                                                    progress-color: Theme.accent-green;
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    // SpinBox Section
+                                    Card {
+                                        card-title: "Numeric Input";
+
+                                        HorizontalLayout {
+                                            spacing: Theme.spacing-lg;
+                                            alignment: start;
+
+                                            VerticalLayout {
+                                                spacing: Theme.spacing-sm;
+
+                                                Text {
+                                                    text: "SpinBox (0-100)";
+                                                    font-size: 12px;
+                                                    color: Theme.text-muted;
+                                                }
+
+                                                SpinBox {
+                                                    value <=> spinbox-value;
+                                                    minimum: 0;
+                                                    maximum: 100;
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    // ComboBox Section
+                                    Card {
+                                        card-title: "Dropdown Selection";
+
+                                        VerticalLayout {
+                                            spacing: Theme.spacing-md;
+
+                                            HorizontalLayout {
+                                                spacing: Theme.spacing-lg;
+
+                                                VerticalLayout {
+                                                    spacing: Theme.spacing-sm;
+
+                                                    Text {
+                                                        text: "Select an option:";
+                                                        font-size: 12px;
+                                                        color: Theme.text-muted;
+                                                    }
+
+                                                    ComboBox {
+                                                        model: ["Option 1", "Option 2", "Option 3", "Option 4"];
+                                                        current-value <=> combo-value;
+                                                    }
+                                                }
+                                            }
+
+                                            Rectangle {
+                                                height: 40px;
+                                                background: Theme.surface-light;
+                                                border-radius: Theme.radius-md;
+
+                                                HorizontalLayout {
+                                                    padding-left: Theme.spacing-md;
+                                                    padding-right: Theme.spacing-md;
+
+                                                    Text {
+                                                        text: "Selected: ";
+                                                        font-size: 13px;
+                                                        color: Theme.text-muted;
+                                                        vertical-alignment: center;
+                                                    }
+
+                                                    Badge {
+                                                        text: combo-value;
+                                                        badge-color: Theme.primary;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        Tab {
+                            title: "Visual Showcase";
+
+                            ScrollView {
+                                VerticalLayout {
+                                    padding: Theme.spacing-md;
+                                    spacing: Theme.spacing-lg;
+
+                                    // Color Palette
+                                    Card {
+                                        card-title: "Color Palette";
+
+                                        VerticalLayout {
+                                            spacing: Theme.spacing-md;
+
+                                            Text {
+                                                text: "Hover over colors to see the highlight effect:";
+                                                font-size: 13px;
+                                                color: Theme.text-secondary;
+                                            }
+
+                                            HorizontalLayout {
+                                                spacing: Theme.spacing-md;
+                                                alignment: start;
+
+                                                ColorSwatch {
+                                                    swatch-color: Theme.primary;
+                                                    color-name: "Primary";
+                                                }
+
+                                                ColorSwatch {
+                                                    swatch-color: Theme.accent-purple;
+                                                    color-name: "Purple";
+                                                }
+
+                                                ColorSwatch {
+                                                    swatch-color: Theme.accent-cyan;
+                                                    color-name: "Cyan";
+                                                }
+
+                                                ColorSwatch {
+                                                    swatch-color: Theme.accent-green;
+                                                    color-name: "Green";
+                                                }
+
+                                                ColorSwatch {
+                                                    swatch-color: Theme.accent-orange;
+                                                    color-name: "Orange";
+                                                }
+
+                                                ColorSwatch {
+                                                    swatch-color: Theme.accent-pink;
+                                                    color-name: "Pink";
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    // Typography
+                                    Card {
+                                        card-title: "Typography Scale";
+
+                                        VerticalLayout {
+                                            spacing: Theme.spacing-md;
+
+                                            Text {
+                                                text: "Display Heading";
+                                                font-size: 32px;
+                                                font-weight: 700;
+                                                color: Theme.text-primary;
+                                            }
+
+                                            Text {
+                                                text: "Section Title";
+                                                font-size: 24px;
+                                                font-weight: 600;
+                                                color: Theme.text-primary;
+                                            }
+
+                                            Text {
+                                                text: "Card Heading";
+                                                font-size: 18px;
+                                                font-weight: 600;
+                                                color: Theme.text-primary;
+                                            }
+
+                                            Text {
+                                                text: "Body text appears in this style. It's designed for readability and comfortable reading at typical screen distances.";
+                                                font-size: 14px;
+                                                color: Theme.text-secondary;
+                                                wrap: word-wrap;
+                                            }
+
+                                            Text {
+                                                text: "CAPTION / LABEL TEXT";
+                                                font-size: 11px;
+                                                font-weight: 600;
+                                                color: Theme.text-muted;
+                                                letter-spacing: 0.5px;
+                                            }
+
+                                            HorizontalLayout {
+                                                spacing: Theme.spacing-md;
+
+                                                Text {
+                                                    text: "Colored: Primary";
+                                                    font-size: 14px;
+                                                    font-weight: 600;
+                                                    color: Theme.primary-light;
+                                                }
+
+                                                Text {
+                                                    text: "Success";
+                                                    font-size: 14px;
+                                                    font-weight: 600;
+                                                    color: Theme.accent-green;
+                                                }
+
+                                                Text {
+                                                    text: "Warning";
+                                                    font-size: 14px;
+                                                    font-weight: 600;
+                                                    color: Theme.accent-orange;
+                                                }
+
+                                                Text {
+                                                    text: "Error";
+                                                    font-size: 14px;
+                                                    font-weight: 600;
+                                                    color: Theme.accent-red;
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    // Progress Indicators
+                                    Card {
+                                        card-title: "Progress Indicators";
+
+                                        VerticalLayout {
+                                            spacing: Theme.spacing-lg;
+
+                                            Text {
+                                                text: "These progress bars are linked to the slider value:";
+                                                font-size: 13px;
+                                                color: Theme.text-secondary;
+                                            }
+
+                                            VerticalLayout {
+                                                spacing: Theme.spacing-sm;
+
+                                                HorizontalLayout {
+                                                    Text {
+                                                        text: "Default";
+                                                        font-size: 12px;
+                                                        color: Theme.text-muted;
+                                                        min-width: 60px;
+                                                    }
+                                                    ProgressBar {
+                                                        horizontal-stretch: 1;
+                                                        value: slider-value;
+                                                        progress-color: Theme.accent-green;
+                                                    }
+                                                }
+                                            }
+
+                                            VerticalLayout {
+                                                spacing: Theme.spacing-sm;
+
+                                                HorizontalLayout {
+                                                    Text {
+                                                        text: "Primary";
+                                                        font-size: 12px;
+                                                        color: Theme.text-muted;
+                                                        min-width: 60px;
+                                                    }
+                                                    ProgressBar {
+                                                        horizontal-stretch: 1;
+                                                        value: slider-value;
+                                                        progress-color: Theme.primary;
+                                                    }
+                                                }
+                                            }
+
+                                            VerticalLayout {
+                                                spacing: Theme.spacing-sm;
+
+                                                HorizontalLayout {
+                                                    Text {
+                                                        text: "Warning";
+                                                        font-size: 12px;
+                                                        color: Theme.text-muted;
+                                                        min-width: 60px;
+                                                    }
+                                                    ProgressBar {
+                                                        horizontal-stretch: 1;
+                                                        value: slider-value;
+                                                        progress-color: Theme.accent-orange;
+                                                    }
+                                                }
+                                            }
+
+                                            VerticalLayout {
+                                                spacing: Theme.spacing-sm;
+
+                                                HorizontalLayout {
+                                                    Text {
+                                                        text: "Danger";
+                                                        font-size: 12px;
+                                                        color: Theme.text-muted;
+                                                        min-width: 60px;
+                                                    }
+                                                    ProgressBar {
+                                                        horizontal-stretch: 1;
+                                                        value: slider-value;
+                                                        progress-color: Theme.accent-red;
+                                                    }
+                                                }
+                                            }
+
+                                            // Big progress display
+                                            Rectangle {
+                                                height: 80px;
+                                                background: Theme.surface-light;
+                                                border-radius: Theme.radius-md;
+
+                                                HorizontalLayout {
+                                                    padding: Theme.spacing-md;
+                                                    spacing: Theme.spacing-lg;
+
+                                                    Text {
+                                                        text: Math.round(slider-value) + "%";
+                                                        font-size: 36px;
+                                                        font-weight: 700;
+                                                        color: Theme.primary-light;
+                                                        vertical-alignment: center;
+                                                        min-width: 100px;
+                                                    }
+
+                                                    VerticalLayout {
+                                                        spacing: Theme.spacing-sm;
+                                                        vertical-stretch: 1;
+                                                        alignment: center;
+
+                                                        Text {
+                                                            text: "Overall Progress";
+                                                            font-size: 14px;
+                                                            font-weight: 600;
+                                                            color: Theme.text-primary;
+                                                        }
+
+                                                        Rectangle {
+                                                            height: 12px;
+                                                            background: Theme.surface;
+                                                            border-radius: 6px;
+                                                            clip: true;
+
+                                                            Rectangle {
+                                                                width: parent.width * slider-value / 100;
+                                                                height: parent.height;
+                                                                border-radius: 6px;
+                                                                background: @linear-gradient(90deg, Theme.primary 0%, Theme.accent-cyan 100%);
+
+                                                                animate width { duration: 200ms; easing: ease-out; }
+                                                            }
+                                                        }
+
+                                                        Text {
+                                                            text: "Linked to slider control";
+                                                            font-size: 11px;
+                                                            color: Theme.text-muted;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -429,21 +1029,52 @@ export component AppWindow inherits Window {
         }
 
         // Footer
-        HorizontalBox {
-            height: 30px;
-            alignment: space-between;
+        Rectangle {
+            height: 48px;
+            background: Theme.surface;
 
-            Text {
-                text: "Slint v1.9 Test Suite";
-                color: #7f8c8d;
-                font-size: 12px;
+            // Top border
+            Rectangle {
+                width: parent.width;
+                height: 1px;
+                background: Theme.border;
             }
 
-            Text {
-                text: "Web Server Running on :3000";
-                color: #27ae60;
-                font-weight: 700;
-                font-size: 12px;
+            HorizontalLayout {
+                padding-left: Theme.spacing-lg;
+                padding-right: Theme.spacing-lg;
+
+                Text {
+                    text: "Built with Slint v1.9";
+                    font-size: 12px;
+                    color: Theme.text-muted;
+                    vertical-alignment: center;
+                }
+
+                Rectangle { horizontal-stretch: 1; }
+
+                HorizontalLayout {
+                    spacing: Theme.spacing-sm;
+                    alignment: center;
+
+                    VerticalLayout {
+                        alignment: center;
+                        Rectangle {
+                            width: 8px;
+                            height: 8px;
+                            border-radius: 4px;
+                            background: Theme.accent-green;
+                        }
+                    }
+
+                    Text {
+                        text: "Server Running on :3000";
+                        font-size: 12px;
+                        font-weight: 600;
+                        color: Theme.accent-green;
+                        vertical-alignment: center;
+                    }
+                }
             }
         }
     }
