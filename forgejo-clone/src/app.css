@@ -1,7 +1,0 @@
-@import "tailwindcss";
-
-@theme {
-  --color-forgejo-orange: #e5873a;
-  --color-forgejo-orange-dark: #d4773a;
-  --color-forgejo-orange-light: #f5e5d5;
-}
