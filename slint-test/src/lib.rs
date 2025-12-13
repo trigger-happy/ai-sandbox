@@ -8,6 +8,5 @@ pub fn main() {
     console_error_panic_hook::set_once();
 
     let ui = AppWindow::new().unwrap();
-    ui.set_status_message("Browser application initialized successfully!".into());
     ui.run().unwrap();
 }

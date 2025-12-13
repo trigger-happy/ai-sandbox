@@ -1,449 +1,773 @@
-import { Button, VerticalBox, HorizontalBox, LineEdit, CheckBox, ComboBox, Slider, SpinBox, TabWidget, GridBox } from "std-widgets.slint";
+import { ScrollView, VerticalBox, HorizontalBox } from "std-widgets.slint";
 
 export component AppWindow inherits Window {
-    title: "Slint Test Application";
-    preferred-width: 800px;
-    preferred-height: 600px;
+    title: "Forgejo – Beyond coding. We forge.";
+    preferred-width: 1200px;
+    preferred-height: 800px;
+    background: #ffffff;
 
-    // Properties for interaction
-    in-out property <string> input-text: "Hello, Slint!";
-    in-out property <bool> checkbox-state: false;
-    in-out property <float> slider-value: 50;
-    in-out property <int> counter: 0;
-    in-out property <string> status-message: "Ready";
-    in-out property <string> combo-value: "Option 1";
+    // Color palette based on Forgejo branding
+    property <color> primary-orange: #ff6600;
+    property <color> dark-orange: #e25822;
+    property <color> light-orange: #ff8533;
+    property <color> text-dark: #2c3e50;
+    property <color> text-light: #6b7280;
+    property <color> bg-light: #f9fafb;
+    property <color> bg-section: #ffffff;
+    property <color> border-color: #e5e7eb;
 
-    // Callback for button clicks
-    callback button-clicked();
-    callback increment-counter();
-    callback reset-counter();
+    ScrollView {
+        VerticalBox {
+            // Header / Navigation Bar
+            Rectangle {
+                height: 70px;
+                background: #ffffff;
+                drop-shadow-blur: 4px;
+                drop-shadow-color: #00000020;
+                drop-shadow-offset-y: 2px;
 
-    button-clicked => {
-        status-message = "Button clicked! Counter: " + counter;
-    }
+                HorizontalBox {
+                    padding-left: 40px;
+                    padding-right: 40px;
+                    spacing: 30px;
+                    alignment: space-between;
 
-    increment-counter => {
-        counter += 1;
-        status-message = "Counter incremented to: " + counter;
-    }
+                    // Logo and Brand
+                    HorizontalBox {
+                        spacing: 12px;
 
-    reset-counter => {
-        counter = 0;
-        status-message = "Counter reset to 0";
-    }
+                        // Logo placeholder (flame icon representation)
+                        Rectangle {
+                            width: 40px;
+                            height: 40px;
+                            background: root.primary-orange;
+                            border-radius: 6px;
 
-    VerticalBox {
-        padding: 20px;
-        spacing: 10px;
+                            // Simplified flame shape
+                            Path {
+                                viewbox-width: 40;
+                                viewbox-height: 40;
+                                fill: #ffffff;
 
-        // Header
-        Text {
-            text: "Slint Component Test Suite";
-            font-size: 24px;
-            font-weight: 700;
-            horizontal-alignment: center;
-        }
+                                commands: "M 20 10 L 25 20 L 22 20 L 24 28 L 18 20 L 20 20 L 16 12 Z";
+                            }
+                        }
 
-        // Status bar
-        Rectangle {
-            height: 40px;
-            background: #e0e0e0;
-            border-radius: 5px;
+                        Text {
+                            text: "Forgejo";
+                            font-size: 24px;
+                            font-weight: 700;
+                            color: root.text-dark;
+                            vertical-alignment: center;
+                        }
+                    }
 
-            Text {
-                text: status-message;
-                vertical-alignment: center;
-                horizontal-alignment: center;
-                font-size: 14px;
+                    // Navigation Menu
+                    HorizontalBox {
+                        spacing: 30px;
+
+                        Text {
+                            text: "Features";
+                            font-size: 15px;
+                            color: root.text-light;
+                            vertical-alignment: center;
+                        }
+
+                        Text {
+                            text: "Download";
+                            font-size: 15px;
+                            color: root.text-light;
+                            vertical-alignment: center;
+                        }
+
+                        Text {
+                            text: "Documentation";
+                            font-size: 15px;
+                            color: root.text-light;
+                            vertical-alignment: center;
+                        }
+
+                        Text {
+                            text: "Community";
+                            font-size: 15px;
+                            color: root.text-light;
+                            vertical-alignment: center;
+                        }
+
+                        Text {
+                            text: "Blog";
+                            font-size: 15px;
+                            color: root.text-light;
+                            vertical-alignment: center;
+                        }
+
+                        // CTA Button
+                        Rectangle {
+                            width: 120px;
+                            height: 38px;
+                            background: root.primary-orange;
+                            border-radius: 6px;
+
+                            Text {
+                                text: "Get Started";
+                                font-size: 14px;
+                                font-weight: 600;
+                                color: #ffffff;
+                                horizontal-alignment: center;
+                                vertical-alignment: center;
+                            }
+                        }
+                    }
+                }
             }
-        }
 
-        // Tab Widget for different component groups
-        TabWidget {
-            Tab {
-                title: "Buttons & Text";
+            // Hero Section
+            Rectangle {
+                height: 500px;
+                background: @linear-gradient(180deg, #ffffff 0%, #fff5f0 100%);
 
                 VerticalBox {
-                    spacing: 20px;
-                    padding: 15px;
+                    padding: 80px;
+                    spacing: 30px;
+                    alignment: center;
 
-                    // Button Section
-                    Rectangle {
-                        height: 120px;
-                        border-width: 1px;
-                        border-color: #cccccc;
-                        border-radius: 5px;
+                    // Main Headline
+                    VerticalBox {
+                        spacing: 16px;
+                        alignment: center;
 
-                        VerticalBox {
-                            padding: 10px;
-                            spacing: 10px;
+                        Text {
+                            text: "Beyond coding. We forge.";
+                            font-size: 56px;
+                            font-weight: 800;
+                            color: root.text-dark;
+                            horizontal-alignment: center;
+                        }
+
+                        Text {
+                            text: "A self-hosted lightweight software forge.";
+                            font-size: 24px;
+                            color: root.text-light;
+                            horizontal-alignment: center;
+                        }
+
+                        Text {
+                            text: "Easy to install, run, and contribute. Join us in forging the future.";
+                            font-size: 18px;
+                            color: root.text-light;
+                            horizontal-alignment: center;
+                        }
+                    }
+
+                    // Hero CTA Buttons
+                    HorizontalBox {
+                        spacing: 16px;
+                        alignment: center;
+
+                        Rectangle {
+                            width: 180px;
+                            height: 50px;
+                            background: root.primary-orange;
+                            border-radius: 8px;
+                            drop-shadow-blur: 8px;
+                            drop-shadow-color: #ff660040;
+                            drop-shadow-offset-y: 4px;
 
                             Text {
-                                text: "Buttons";
+                                text: "Download";
                                 font-size: 16px;
                                 font-weight: 700;
+                                color: #ffffff;
+                                horizontal-alignment: center;
+                                vertical-alignment: center;
                             }
+                        }
 
-                            HorizontalBox {
-                                spacing: 10px;
-
-                                Button {
-                                    text: "Click Me!";
-                                    clicked => {
-                                        root.button-clicked();
-                                    }
-                                }
-
-                                Button {
-                                    text: "Increment";
-                                    clicked => {
-                                        root.increment-counter();
-                                    }
-                                }
-
-                                Button {
-                                    text: "Reset";
-                                    clicked => {
-                                        root.reset-counter();
-                                    }
-                                }
-                            }
+                        Rectangle {
+                            width: 180px;
+                            height: 50px;
+                            background: #ffffff;
+                            border-radius: 8px;
+                            border-width: 2px;
+                            border-color: root.border-color;
 
                             Text {
-                                text: "Counter: " + counter;
-                                font-size: 14px;
+                                text: "Learn More";
+                                font-size: 16px;
+                                font-weight: 600;
+                                color: root.text-dark;
+                                horizontal-alignment: center;
+                                vertical-alignment: center;
                             }
                         }
                     }
 
-                    // Text Input Section
+                    // Hero illustration placeholder
                     Rectangle {
-                        height: 100px;
-                        border-width: 1px;
-                        border-color: #cccccc;
-                        border-radius: 5px;
+                        height: 60px;
+                        background: transparent;
 
-                        VerticalBox {
-                            padding: 10px;
-                            spacing: 10px;
+                        HorizontalBox {
+                            spacing: 12px;
+                            alignment: center;
 
-                            Text {
-                                text: "Text Input";
-                                font-size: 16px;
-                                font-weight: 700;
+                            Rectangle {
+                                width: 50px;
+                                height: 50px;
+                                background: root.light-orange;
+                                border-radius: 25px;
+                                opacity: 0.3;
                             }
 
-                            LineEdit {
-                                text <=> input-text;
-                                placeholder-text: "Enter text here...";
+                            Rectangle {
+                                width: 70px;
+                                height: 70px;
+                                background: root.primary-orange;
+                                border-radius: 35px;
+                                opacity: 0.5;
                             }
 
-                            Text {
-                                text: "You entered: " + input-text;
+                            Rectangle {
+                                width: 50px;
+                                height: 50px;
+                                background: root.dark-orange;
+                                border-radius: 25px;
+                                opacity: 0.3;
                             }
                         }
                     }
+                }
+            }
 
-                    // CheckBox Section
-                    Rectangle {
-                        height: 80px;
-                        border-width: 1px;
-                        border-color: #cccccc;
-                        border-radius: 5px;
+            // Features Section
+            Rectangle {
+                min-height: 600px;
+                background: root.bg-section;
 
-                        VerticalBox {
-                            padding: 10px;
-                            spacing: 10px;
+                VerticalBox {
+                    padding: 80px;
+                    spacing: 50px;
 
-                            Text {
-                                text: "CheckBox";
-                                font-size: 16px;
-                                font-weight: 700;
-                            }
+                    // Section Title
+                    VerticalBox {
+                        spacing: 12px;
+                        alignment: center;
 
-                            HorizontalBox {
-                                spacing: 15px;
+                        Text {
+                            text: "Why choose Forgejo?";
+                            font-size: 40px;
+                            font-weight: 700;
+                            color: root.text-dark;
+                            horizontal-alignment: center;
+                        }
 
-                                CheckBox {
-                                    text: "Enable Feature";
-                                    checked <=> checkbox-state;
+                        Text {
+                            text: "Everything you need for collaborative software development";
+                            font-size: 18px;
+                            color: root.text-light;
+                            horizontal-alignment: center;
+                        }
+                    }
+
+                    // Feature Grid - Row 1
+                    HorizontalBox {
+                        spacing: 30px;
+                        alignment: stretch;
+
+                        // Feature Card 1
+                        Rectangle {
+                            background: #ffffff;
+                            border-radius: 12px;
+                            border-width: 1px;
+                            border-color: root.border-color;
+                            drop-shadow-blur: 8px;
+                            drop-shadow-color: #00000008;
+                            drop-shadow-offset-y: 4px;
+
+                            VerticalBox {
+                                padding: 30px;
+                                spacing: 16px;
+
+                                Rectangle {
+                                    height: 60px;
+                                    width: 60px;
+                                    background: #fff5f0;
+                                    border-radius: 12px;
+
+                                    Rectangle {
+                                        width: 40px;
+                                        height: 40px;
+                                        x: 10px;
+                                        y: 10px;
+                                        background: root.primary-orange;
+                                        border-radius: 8px;
+                                    }
                                 }
 
                                 Text {
-                                    text: checkbox-state ? "ENABLED" : "DISABLED";
-                                    color: checkbox-state ? #00aa00 : #aa0000;
+                                    text: "Self-Hosted";
+                                    font-size: 22px;
                                     font-weight: 700;
+                                    color: root.text-dark;
+                                }
+
+                                Text {
+                                    text: "Take back control of your data. Host Forgejo on your own infrastructure and maintain complete ownership of your code.";
+                                    font-size: 15px;
+                                    color: root.text-light;
+                                    wrap: word-wrap;
                                 }
                             }
                         }
-                    }
-                }
-            }
 
-            Tab {
-                title: "Sliders";
+                        // Feature Card 2
+                        Rectangle {
+                            background: #ffffff;
+                            border-radius: 12px;
+                            border-width: 1px;
+                            border-color: root.border-color;
+                            drop-shadow-blur: 8px;
+                            drop-shadow-color: #00000008;
+                            drop-shadow-offset-y: 4px;
 
-                VerticalBox {
-                    spacing: 20px;
-                    padding: 15px;
-
-                    // Slider Section
-                    Rectangle {
-                        height: 140px;
-                        border-width: 1px;
-                        border-color: #cccccc;
-                        border-radius: 5px;
-
-                        VerticalBox {
-                            padding: 10px;
-                            spacing: 10px;
-
-                            Text {
-                                text: "Slider";
-                                font-size: 16px;
-                                font-weight: 700;
-                            }
-
-                            Slider {
-                                value <=> slider-value;
-                                minimum: 0;
-                                maximum: 100;
-                            }
-
-                            Text {
-                                text: "Value: " + Math.round(slider-value);
-                            }
-
-                            Rectangle {
-                                height: 30px;
-                                background: #ecf0f1;
-                                border-radius: 5px;
+                            VerticalBox {
+                                padding: 30px;
+                                spacing: 16px;
 
                                 Rectangle {
-                                    width: parent.width * slider-value / 100;
-                                    height: parent.height;
-                                    background: #3498db;
-                                    border-radius: 5px;
-                                }
-                            }
-                        }
-                    }
-
-                    // SpinBox Section
-                    Rectangle {
-                        height: 80px;
-                        border-width: 1px;
-                        border-color: #cccccc;
-                        border-radius: 5px;
-
-                        VerticalBox {
-                            padding: 10px;
-                            spacing: 10px;
-
-                            Text {
-                                text: "SpinBox";
-                                font-size: 16px;
-                                font-weight: 700;
-                            }
-
-                            SpinBox {
-                                value: 25;
-                                minimum: 0;
-                                maximum: 100;
-                            }
-                        }
-                    }
-
-                    // ComboBox Section
-                    Rectangle {
-                        height: 80px;
-                        border-width: 1px;
-                        border-color: #cccccc;
-                        border-radius: 5px;
-
-                        VerticalBox {
-                            padding: 10px;
-                            spacing: 10px;
-
-                            Text {
-                                text: "ComboBox";
-                                font-size: 16px;
-                                font-weight: 700;
-                            }
-
-                            ComboBox {
-                                model: ["Option 1", "Option 2", "Option 3", "Option 4"];
-                                current-value <=> combo-value;
-                            }
-                        }
-                    }
-                }
-            }
-
-            Tab {
-                title: "Visual";
-
-                VerticalBox {
-                    spacing: 20px;
-                    padding: 15px;
-
-                    // Color Palette
-                    Rectangle {
-                        height: 120px;
-                        border-width: 1px;
-                        border-color: #cccccc;
-                        border-radius: 5px;
-
-                        VerticalBox {
-                            padding: 10px;
-                            spacing: 10px;
-
-                            Text {
-                                text: "Color Palette";
-                                font-size: 16px;
-                                font-weight: 700;
-                            }
-
-                            HorizontalBox {
-                                spacing: 10px;
-                                alignment: center;
-
-                                Rectangle {
-                                    width: 70px;
-                                    height: 70px;
-                                    background: #e74c3c;
-                                    border-radius: 10px;
-                                }
-
-                                Rectangle {
-                                    width: 70px;
-                                    height: 70px;
-                                    background: #3498db;
-                                    border-radius: 10px;
-                                }
-
-                                Rectangle {
-                                    width: 70px;
-                                    height: 70px;
-                                    background: #2ecc71;
-                                    border-radius: 10px;
-                                }
-
-                                Rectangle {
-                                    width: 70px;
-                                    height: 70px;
-                                    background: #f39c12;
-                                    border-radius: 10px;
-                                }
-
-                                Rectangle {
-                                    width: 70px;
-                                    height: 70px;
-                                    background: #9b59b6;
-                                    border-radius: 10px;
-                                }
-                            }
-                        }
-                    }
-
-                    // Text Styles
-                    Rectangle {
-                        height: 140px;
-                        border-width: 1px;
-                        border-color: #cccccc;
-                        border-radius: 5px;
-
-                        VerticalBox {
-                            padding: 10px;
-                            spacing: 8px;
-
-                            Text {
-                                text: "Text Styles";
-                                font-size: 16px;
-                                font-weight: 700;
-                            }
-
-                            Text {
-                                text: "Normal Text (14px)";
-                                font-size: 14px;
-                            }
-
-                            Text {
-                                text: "Bold Text (14px)";
-                                font-size: 14px;
-                                font-weight: 700;
-                            }
-
-                            Text {
-                                text: "Large Text (20px)";
-                                font-size: 20px;
-                            }
-
-                            Text {
-                                text: "Colored Text (Purple)";
-                                font-size: 14px;
-                                color: #9b59b6;
-                            }
-                        }
-                    }
-
-                    // Progress Bar
-                    Rectangle {
-                        height: 90px;
-                        border-width: 1px;
-                        border-color: #cccccc;
-                        border-radius: 5px;
-
-                        VerticalBox {
-                            padding: 10px;
-                            spacing: 10px;
-
-                            Text {
-                                text: "Progress Indicator";
-                                font-size: 16px;
-                                font-weight: 700;
-                            }
-
-                            Rectangle {
-                                height: 25px;
-                                background: #ecf0f1;
-                                border-radius: 12px;
-
-                                Rectangle {
-                                    width: parent.width * slider-value / 100;
-                                    height: parent.height;
-                                    background: #27ae60;
+                                    height: 60px;
+                                    width: 60px;
+                                    background: #f0f9ff;
                                     border-radius: 12px;
+
+                                    Rectangle {
+                                        width: 40px;
+                                        height: 40px;
+                                        x: 10px;
+                                        y: 10px;
+                                        background: #3b82f6;
+                                        border-radius: 8px;
+                                    }
+                                }
+
+                                Text {
+                                    text: "Lightweight";
+                                    font-size: 22px;
+                                    font-weight: 700;
+                                    color: root.text-dark;
+                                }
+
+                                Text {
+                                    text: "Efficient and fast. Forgejo is designed to run smoothly on minimal hardware without compromising on features.";
+                                    font-size: 15px;
+                                    color: root.text-light;
+                                    wrap: word-wrap;
                                 }
                             }
+                        }
 
-                            Text {
-                                text: "Progress: " + Math.round(slider-value) + "% (linked to slider)";
-                                horizontal-alignment: center;
-                                font-size: 12px;
+                        // Feature Card 3
+                        Rectangle {
+                            background: #ffffff;
+                            border-radius: 12px;
+                            border-width: 1px;
+                            border-color: root.border-color;
+                            drop-shadow-blur: 8px;
+                            drop-shadow-color: #00000008;
+                            drop-shadow-offset-y: 4px;
+
+                            VerticalBox {
+                                padding: 30px;
+                                spacing: 16px;
+
+                                Rectangle {
+                                    height: 60px;
+                                    width: 60px;
+                                    background: #f0fdf4;
+                                    border-radius: 12px;
+
+                                    Rectangle {
+                                        width: 40px;
+                                        height: 40px;
+                                        x: 10px;
+                                        y: 10px;
+                                        background: #22c55e;
+                                        border-radius: 8px;
+                                    }
+                                }
+
+                                Text {
+                                    text: "Community-Driven";
+                                    font-size: 22px;
+                                    font-weight: 700;
+                                    color: root.text-dark;
+                                }
+
+                                Text {
+                                    text: "Built by the community, for the community. Join our inclusive community and contribute to shaping the future of Forgejo.";
+                                    font-size: 15px;
+                                    color: root.text-light;
+                                    wrap: word-wrap;
+                                }
+                            }
+                        }
+                    }
+
+                    // Feature Grid - Row 2
+                    HorizontalBox {
+                        spacing: 30px;
+                        alignment: stretch;
+
+                        // Feature Card 4
+                        Rectangle {
+                            background: #ffffff;
+                            border-radius: 12px;
+                            border-width: 1px;
+                            border-color: root.border-color;
+                            drop-shadow-blur: 8px;
+                            drop-shadow-color: #00000008;
+                            drop-shadow-offset-y: 4px;
+
+                            VerticalBox {
+                                padding: 30px;
+                                spacing: 16px;
+
+                                Rectangle {
+                                    height: 60px;
+                                    width: 60px;
+                                    background: #fef3f2;
+                                    border-radius: 12px;
+
+                                    Rectangle {
+                                        width: 40px;
+                                        height: 40px;
+                                        x: 10px;
+                                        y: 10px;
+                                        background: #ef4444;
+                                        border-radius: 8px;
+                                    }
+                                }
+
+                                Text {
+                                    text: "Privacy First";
+                                    font-size: 22px;
+                                    font-weight: 700;
+                                    color: root.text-dark;
+                                }
+
+                                Text {
+                                    text: "Your data stays yours. No tracking, no surveillance, just pure collaboration on your terms.";
+                                    font-size: 15px;
+                                    color: root.text-light;
+                                    wrap: word-wrap;
+                                }
+                            }
+                        }
+
+                        // Feature Card 5
+                        Rectangle {
+                            background: #ffffff;
+                            border-radius: 12px;
+                            border-width: 1px;
+                            border-color: root.border-color;
+                            drop-shadow-blur: 8px;
+                            drop-shadow-color: #00000008;
+                            drop-shadow-offset-y: 4px;
+
+                            VerticalBox {
+                                padding: 30px;
+                                spacing: 16px;
+
+                                Rectangle {
+                                    height: 60px;
+                                    width: 60px;
+                                    background: #faf5ff;
+                                    border-radius: 12px;
+
+                                    Rectangle {
+                                        width: 40px;
+                                        height: 40px;
+                                        x: 10px;
+                                        y: 10px;
+                                        background: #a855f7;
+                                        border-radius: 8px;
+                                    }
+                                }
+
+                                Text {
+                                    text: "Federation Ready";
+                                    font-size: 22px;
+                                    font-weight: 700;
+                                    color: root.text-dark;
+                                }
+
+                                Text {
+                                    text: "Connect with other instances through ActivityPub. Collaborate across the federated forge network.";
+                                    font-size: 15px;
+                                    color: root.text-light;
+                                    wrap: word-wrap;
+                                }
+                            }
+                        }
+
+                        // Feature Card 6
+                        Rectangle {
+                            background: #ffffff;
+                            border-radius: 12px;
+                            border-width: 1px;
+                            border-color: root.border-color;
+                            drop-shadow-blur: 8px;
+                            drop-shadow-color: #00000008;
+                            drop-shadow-offset-y: 4px;
+
+                            VerticalBox {
+                                padding: 30px;
+                                spacing: 16px;
+
+                                Rectangle {
+                                    height: 60px;
+                                    width: 60px;
+                                    background: #fffbeb;
+                                    border-radius: 12px;
+
+                                    Rectangle {
+                                        width: 40px;
+                                        height: 40px;
+                                        x: 10px;
+                                        y: 10px;
+                                        background: #f59e0b;
+                                        border-radius: 8px;
+                                    }
+                                }
+
+                                Text {
+                                    text: "Easy Migration";
+                                    font-size: 22px;
+                                    font-weight: 700;
+                                    color: root.text-dark;
+                                }
+
+                                Text {
+                                    text: "Familiar interface for GitHub users. Import your repositories and start collaborating without a learning curve.";
+                                    font-size: 15px;
+                                    color: root.text-light;
+                                    wrap: word-wrap;
+                                }
                             }
                         }
                     }
                 }
             }
-        }
 
-        // Footer
-        HorizontalBox {
-            height: 30px;
-            alignment: space-between;
+            // Call to Action Section
+            Rectangle {
+                height: 300px;
+                background: @linear-gradient(135deg, #ff6600 0%, #e25822 100%);
 
-            Text {
-                text: "Slint v1.9 Test Suite";
-                color: #7f8c8d;
-                font-size: 12px;
+                VerticalBox {
+                    padding: 60px;
+                    spacing: 30px;
+                    alignment: center;
+
+                    Text {
+                        text: "Ready to get started?";
+                        font-size: 40px;
+                        font-weight: 700;
+                        color: #ffffff;
+                        horizontal-alignment: center;
+                    }
+
+                    Text {
+                        text: "Join thousands of developers who have already made the switch to self-hosted collaboration.";
+                        font-size: 18px;
+                        color: #ffffff;
+                        horizontal-alignment: center;
+                        opacity: 0.9;
+                    }
+
+                    HorizontalBox {
+                        spacing: 16px;
+                        alignment: center;
+
+                        Rectangle {
+                            width: 200px;
+                            height: 50px;
+                            background: #ffffff;
+                            border-radius: 8px;
+
+                            Text {
+                                text: "Download Forgejo";
+                                font-size: 16px;
+                                font-weight: 700;
+                                color: root.primary-orange;
+                                horizontal-alignment: center;
+                                vertical-alignment: center;
+                            }
+                        }
+
+                        Rectangle {
+                            width: 200px;
+                            height: 50px;
+                            background: transparent;
+                            border-radius: 8px;
+                            border-width: 2px;
+                            border-color: #ffffff;
+
+                            Text {
+                                text: "Read the Docs";
+                                font-size: 16px;
+                                font-weight: 600;
+                                color: #ffffff;
+                                horizontal-alignment: center;
+                                vertical-alignment: center;
+                            }
+                        }
+                    }
+                }
             }
 
-            Text {
-                text: "Web Server Running on :3000";
-                color: #27ae60;
-                font-weight: 700;
-                font-size: 12px;
+            // Footer
+            Rectangle {
+                height: 250px;
+                background: #1f2937;
+
+                VerticalBox {
+                    padding: 50px;
+                    spacing: 30px;
+
+                    HorizontalBox {
+                        spacing: 80px;
+
+                        // Footer Column 1
+                        VerticalBox {
+                            spacing: 12px;
+
+                            Text {
+                                text: "Forgejo";
+                                font-size: 18px;
+                                font-weight: 700;
+                                color: #ffffff;
+                            }
+
+                            Text {
+                                text: "A self-hosted lightweight";
+                                font-size: 14px;
+                                color: #9ca3af;
+                            }
+
+                            Text {
+                                text: "software forge.";
+                                font-size: 14px;
+                                color: #9ca3af;
+                            }
+                        }
+
+                        // Footer Column 2
+                        VerticalBox {
+                            spacing: 12px;
+
+                            Text {
+                                text: "Resources";
+                                font-size: 16px;
+                                font-weight: 600;
+                                color: #ffffff;
+                            }
+
+                            Text {
+                                text: "Documentation";
+                                font-size: 14px;
+                                color: #9ca3af;
+                            }
+
+                            Text {
+                                text: "Download";
+                                font-size: 14px;
+                                color: #9ca3af;
+                            }
+
+                            Text {
+                                text: "Releases";
+                                font-size: 14px;
+                                color: #9ca3af;
+                            }
+                        }
+
+                        // Footer Column 3
+                        VerticalBox {
+                            spacing: 12px;
+
+                            Text {
+                                text: "Community";
+                                font-size: 16px;
+                                font-weight: 600;
+                                color: #ffffff;
+                            }
+
+                            Text {
+                                text: "Codeberg";
+                                font-size: 14px;
+                                color: #9ca3af;
+                            }
+
+                            Text {
+                                text: "Forum";
+                                font-size: 14px;
+                                color: #9ca3af;
+                            }
+
+                            Text {
+                                text: "Matrix Chat";
+                                font-size: 14px;
+                                color: #9ca3af;
+                            }
+                        }
+
+                        // Footer Column 4
+                        VerticalBox {
+                            spacing: 12px;
+
+                            Text {
+                                text: "About";
+                                font-size: 16px;
+                                font-weight: 600;
+                                color: #ffffff;
+                            }
+
+                            Text {
+                                text: "Blog";
+                                font-size: 14px;
+                                color: #9ca3af;
+                            }
+
+                            Text {
+                                text: "Governance";
+                                font-size: 14px;
+                                color: #9ca3af;
+                            }
+
+                            Text {
+                                text: "License";
+                                font-size: 14px;
+                                color: #9ca3af;
+                            }
+                        }
+                    }
+
+                    // Copyright
+                    Rectangle {
+                        height: 40px;
+                        border-width: 1px;
+                        border-color: #374151;
+
+                        Text {
+                            text: "© 2025 Forgejo Authors. Licensed under MIT.";
+                            font-size: 14px;
+                            color: #6b7280;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
             }
         }
     }
