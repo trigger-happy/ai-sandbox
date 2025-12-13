@@ -3,10 +3,26 @@ name = "slint-test"
 version = "0.1.0"
 edition = "2024"
 
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = false
+
+[lib]
+crate-type = ["cdylib"]
+path = "src/lib.rs"
+
+[[bin]]
+name = "server"
+path = "src/server.rs"
+
 [dependencies]
 slint = "1.9"
+wasm-bindgen = "0.2"
+console_error_panic_hook = "0.1"
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 tokio = { version = "1", features = ["full"] }
 axum = "0.7"
+tower-http = { version = "0.6", features = ["fs"] }
 
 [build-dependencies]
 slint-build = "1.9"

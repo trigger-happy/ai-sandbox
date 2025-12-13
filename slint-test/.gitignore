@@ -3,6 +3,9 @@
 **/*.rs.bk
 *.pdb
 
+# Wasm build artifacts
+/pkg/
+
 # IDE
 .vscode/
 .idea/
