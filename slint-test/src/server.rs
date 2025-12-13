@@ -11,79 +11,42 @@ async fn handler() -> Html<&'static str> {
         <html>
         <head>
             <meta charset="UTF-8">
-            <title>Slint Test Application</title>
+            <title>Forgejo - Beyond coding. We forge.</title>
             <style>
-                body {
-                    font-family: Arial, sans-serif;
+                * {
                     margin: 0;
                     padding: 0;
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    min-height: 100vh;
-                    display: flex;
-                    flex-direction: column;
+                    box-sizing: border-box;
                 }
-                .header {
-                    background: rgba(255, 255, 255, 0.1);
-                    padding: 20px;
-                    text-align: center;
-                    color: white;
-                    backdrop-filter: blur(10px);
-                }
-                .header h1 {
-                    margin: 0 0 10px 0;
-                    font-size: 32px;
-                }
-                .header p {
-                    margin: 5px 0;
-                    opacity: 0.9;
-                }
-                .app-container {
-                    flex: 1;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    padding: 20px;
-                }
-                #slint-app {
-                    background: white;
-                    border-radius: 10px;
-                    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+                html, body {
+                    margin: 0;
+                    padding: 0;
+                    width: 100%;
+                    height: 100%;
                     overflow: hidden;
+                    background: #161B22;
                 }
-                .info {
-                    background: rgba(255, 255, 255, 0.1);
-                    color: white;
-                    padding: 15px;
-                    text-align: center;
-                    backdrop-filter: blur(10px);
+                canvas {
+                    display: block;
+                    width: 100%;
+                    height: 100%;
                 }
             </style>
         </head>
         <body>
-            <div class="header">
-                <h1>🚀 Slint Test Application</h1>
-                <p>Interactive Browser-Based UI Components</p>
-            </div>
-
-            <div class="app-container">
-                <div id="slint-app">
-                    <!-- Slint UI will be rendered here -->
-                    <canvas id="canvas"></canvas>
-                </div>
-            </div>
-
-            <div class="info">
-                <p>✓ Web Server Running | Built with Slint, Rust, Axum & WebAssembly</p>
-            </div>
-
+            <canvas id="canvas"></canvas>
+            <script>
+                // Set canvas size immediately before module loads
+                (function() {
+                    const canvas = document.getElementById('canvas');
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                    console.log('Canvas set to:', canvas.width, 'x', canvas.height);
+                })();
+            </script>
             <script type="module">
                 import init from '/pkg/slint_test.js';
-
-                async function run() {
-                    await init();
-                }
-
-                run().catch(console.error);
+                init().catch(console.error);
             </script>
         </body>
         </html>

@@ -1,35 +1,35 @@
 import { Button, VerticalBox, HorizontalBox, LineEdit, CheckBox, ComboBox, Slider, SpinBox, TabWidget, GridBox, ScrollView } from "std-widgets.slint";
 
 // ============================================================================
-// THEME & COLORS
+// FORGEJO THEME
 // ============================================================================
 
-global Theme {
-    // Primary palette - Modern blue gradient tones
-    out property <color> primary: #6366f1;
-    out property <color> primary-light: #818cf8;
-    out property <color> primary-dark: #4f46e5;
+global ForgejoTheme {
+    // Primary Forgejo orange
+    out property <color> primary: #FF6600;
+    out property <color> primary-light: #FF8533;
+    out property <color> primary-dark: #CC5200;
 
     // Accent colors
-    out property <color> accent-green: #10b981;
-    out property <color> accent-red: #ef4444;
-    out property <color> accent-orange: #f59e0b;
-    out property <color> accent-purple: #8b5cf6;
-    out property <color> accent-cyan: #06b6d4;
-    out property <color> accent-pink: #ec4899;
+    out property <color> accent-green: #21D07B;
+    out property <color> accent-blue: #4183C4;
+    out property <color> accent-purple: #8957E5;
+    out property <color> accent-red: #E74C3C;
 
-    // Neutrals
-    out property <color> background: #0f172a;
-    out property <color> surface: #1e293b;
-    out property <color> surface-light: #334155;
-    out property <color> surface-lighter: #475569;
-    out property <color> border: #334155;
-    out property <color> border-light: #475569;
+    // Background colors (dark mode)
+    out property <color> bg-dark: #161B22;
+    out property <color> bg-surface: #21262D;
+    out property <color> bg-card: #2D333B;
+    out property <color> bg-hover: #373E47;
 
     // Text colors
-    out property <color> text-primary: #f1f5f9;
-    out property <color> text-secondary: #94a3b8;
-    out property <color> text-muted: #64748b;
+    out property <color> text-primary: #E6EDF3;
+    out property <color> text-secondary: #8B949E;
+    out property <color> text-muted: #6E7681;
+
+    // Border
+    out property <color> border: #30363D;
+    out property <color> border-light: #444C56;
 
     // Spacing
     out property <length> spacing-xs: 4px;
@@ -37,88 +37,31 @@ global Theme {
     out property <length> spacing-md: 16px;
     out property <length> spacing-lg: 24px;
     out property <length> spacing-xl: 32px;
+    out property <length> spacing-2xl: 48px;
 
     // Border radius
     out property <length> radius-sm: 6px;
-    out property <length> radius-md: 10px;
-    out property <length> radius-lg: 16px;
-    out property <length> radius-xl: 24px;
+    out property <length> radius-md: 8px;
+    out property <length> radius-lg: 12px;
 }
 
 // ============================================================================
 // CUSTOM COMPONENTS
 // ============================================================================
 
-// Styled Card Component
-component Card inherits Rectangle {
-    in property <string> card-title: "";
-    in property <bool> show-header: true;
-
-    background: Theme.surface;
-    border-radius: Theme.radius-lg;
-    clip: true;
-
-    // Subtle glow effect
-    Rectangle {
-        x: 0;
-        y: 0;
-        width: parent.width;
-        height: 2px;
-        background: @linear-gradient(90deg, Theme.primary-light 0%, Theme.accent-purple 50%, Theme.accent-cyan 100%);
-        opacity: 0.6;
-    }
-
-    VerticalLayout {
-        padding: Theme.spacing-md;
-        spacing: Theme.spacing-md;
-
-        if show-header && card-title != "" : HorizontalLayout {
-            spacing: Theme.spacing-sm;
-
-            Rectangle {
-                width: 4px;
-                height: 20px;
-                background: Theme.primary;
-                border-radius: 2px;
-            }
-
-            Text {
-                text: card-title;
-                font-size: 15px;
-                font-weight: 600;
-                color: Theme.text-primary;
-                vertical-alignment: center;
-            }
-        }
-
-        @children
-    }
-}
-
-// Modern styled button
-component StyledButton inherits Rectangle {
-    in property <string> label: "Button";
-    in property <color> btn-color: Theme.primary;
-    in property <bool> outline: false;
-
+// Navigation Link
+component NavLink inherits Rectangle {
+    in property <string> text: "";
     callback clicked();
 
-    min-width: 100px;
-    height: 38px;
-    border-radius: Theme.radius-md;
-    background: outline ? transparent : btn-color;
-    border-width: outline ? 2px : 0px;
-    border-color: btn-color;
+    background: transparent;
+    height: 40px;
 
-    animate background { duration: 150ms; easing: ease-out; }
-    animate border-color { duration: 150ms; easing: ease-out; }
+    animate background { duration: 150ms; }
 
     states [
-        pressed when touch.pressed : {
-            background: outline ? btn-color.with-alpha(0.2) : btn-color.darker(20%);
-        }
         hovered when touch.has-hover : {
-            background: outline ? btn-color.with-alpha(0.1) : btn-color.darker(10%);
+            background: ForgejoTheme.bg-hover;
         }
     ]
 
@@ -127,134 +70,51 @@ component StyledButton inherits Rectangle {
     }
 
     HorizontalLayout {
-        padding-left: Theme.spacing-md;
-        padding-right: Theme.spacing-md;
-
-        Text {
-            text: label;
-            font-size: 14px;
-            font-weight: 600;
-            color: outline ? btn-color : Theme.text-primary;
-            horizontal-alignment: center;
-            vertical-alignment: center;
-        }
-    }
-}
-
-// Badge/Pill component
-component Badge inherits Rectangle {
-    in property <string> text: "";
-    in property <color> badge-color: Theme.accent-green;
-
-    height: 24px;
-    border-radius: 12px;
-    background: badge-color.with-alpha(0.2);
-
-    HorizontalLayout {
-        padding-left: Theme.spacing-sm;
-        padding-right: Theme.spacing-sm;
+        padding-left: ForgejoTheme.spacing-md;
+        padding-right: ForgejoTheme.spacing-md;
 
         Text {
             text: root.text;
-            font-size: 12px;
-            font-weight: 600;
-            color: badge-color;
+            font-size: 14px;
+            font-weight: 500;
+            color: ForgejoTheme.text-secondary;
             vertical-alignment: center;
         }
     }
 }
 
-// Animated Progress Bar
-component ProgressBar inherits Rectangle {
-    in property <float> value: 0;
-    in property <color> progress-color: Theme.accent-green;
+// Primary Button (Orange)
+component PrimaryButton inherits Rectangle {
+    in property <string> label: "Button";
+    callback clicked();
 
-    height: 8px;
-    background: Theme.surface-light;
-    border-radius: 4px;
-    clip: true;
+    min-width: 120px;
+    height: 44px;
+    border-radius: ForgejoTheme.radius-md;
+    background: ForgejoTheme.primary;
 
-    Rectangle {
-        x: 0;
-        width: parent.width * clamp(value / 100, 0, 1);
-        height: parent.height;
-        border-radius: 4px;
-        background: progress-color;
-
-        animate width { duration: 200ms; easing: ease-out; }
-
-        // Shimmer effect
-        Rectangle {
-            x: parent.width - 30px;
-            width: 30px;
-            height: parent.height;
-            background: @linear-gradient(90deg, transparent 0%, white.with-alpha(0.3) 50%, transparent 100%);
-        }
-    }
-}
-
-// Stat display component
-component StatDisplay inherits Rectangle {
-    in property <string> label: "";
-    in property <string> value: "";
-    in property <color> value-color: Theme.primary-light;
-
-    background: Theme.surface-light;
-    border-radius: Theme.radius-md;
-    height: 70px;
-
-    VerticalLayout {
-        padding: Theme.spacing-md;
-        spacing: Theme.spacing-xs;
-
-        Text {
-            text: label;
-            font-size: 12px;
-            font-weight: 500;
-            color: Theme.text-muted;
-        }
-
-        Text {
-            text: value;
-            font-size: 24px;
-            font-weight: 700;
-            color: value-color;
-        }
-    }
-}
-
-// Color swatch with hover effect
-component ColorSwatch inherits Rectangle {
-    in property <color> swatch-color: Theme.primary;
-    in property <string> color-name: "";
-
-    width: 80px;
-    height: 80px;
-    border-radius: Theme.radius-lg;
-    background: swatch-color;
-    clip: true;
-
-    animate border-width { duration: 150ms; }
+    animate background { duration: 150ms; }
 
     states [
+        pressed when touch.pressed : {
+            background: ForgejoTheme.primary-dark;
+        }
         hovered when touch.has-hover : {
-            border-width: 3px;
-            border-color: white;
+            background: ForgejoTheme.primary-light;
         }
     ]
 
-    touch := TouchArea {}
+    touch := TouchArea {
+        clicked => { root.clicked(); }
+    }
 
-    // Label at bottom
-    Rectangle {
-        y: parent.height - 24px;
-        width: parent.width;
-        height: 24px;
-        background: black.with-alpha(0.4);
+    HorizontalLayout {
+        padding-left: ForgejoTheme.spacing-lg;
+        padding-right: ForgejoTheme.spacing-lg;
 
         Text {
-            text: color-name;
-            font-size: 10px;
+            text: label;
+            font-size: 15px;
             font-weight: 600;
             color: white;
             horizontal-alignment: center;
@@ -263,758 +123,766 @@ component ColorSwatch inherits Rectangle {
     }
 }
 
+// Secondary Button (Outline)
+component SecondaryButton inherits Rectangle {
+    in property <string> label: "Button";
+    callback clicked();
+
+    min-width: 120px;
+    height: 44px;
+    border-radius: ForgejoTheme.radius-md;
+    background: transparent;
+    border-width: 2px;
+    border-color: ForgejoTheme.primary;
+
+    animate background { duration: 150ms; }
+
+    states [
+        pressed when touch.pressed : {
+            background: ForgejoTheme.primary.with-alpha(0.2);
+        }
+        hovered when touch.has-hover : {
+            background: ForgejoTheme.primary.with-alpha(0.1);
+        }
+    ]
+
+    touch := TouchArea {
+        clicked => { root.clicked(); }
+    }
+
+    HorizontalLayout {
+        padding-left: ForgejoTheme.spacing-lg;
+        padding-right: ForgejoTheme.spacing-lg;
+
+        Text {
+            text: label;
+            font-size: 15px;
+            font-weight: 600;
+            color: ForgejoTheme.primary;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+        }
+    }
+}
+
+// Feature Card
+component FeatureCard inherits Rectangle {
+    in property <string> title: "";
+    in property <string> description: "";
+    in property <string> icon: "";
+
+    min-width: 280px;
+    min-height: 180px;
+    background: ForgejoTheme.bg-card;
+    border-radius: ForgejoTheme.radius-lg;
+    border-width: 1px;
+    border-color: ForgejoTheme.border;
+
+    animate background { duration: 150ms; }
+    animate border-color { duration: 150ms; }
+
+    states [
+        hovered when touch.has-hover : {
+            background: ForgejoTheme.bg-hover;
+            border-color: ForgejoTheme.primary;
+        }
+    ]
+
+    touch := TouchArea {}
+
+    VerticalLayout {
+        padding: ForgejoTheme.spacing-lg;
+        spacing: ForgejoTheme.spacing-md;
+
+        // Icon circle
+        Rectangle {
+            width: 48px;
+            height: 48px;
+            border-radius: 24px;
+            background: ForgejoTheme.primary.with-alpha(0.15);
+
+            Text {
+                text: icon;
+                font-size: 22px;
+                color: ForgejoTheme.primary;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+        }
+
+        Text {
+            text: title;
+            font-size: 18px;
+            font-weight: 600;
+            color: ForgejoTheme.text-primary;
+            wrap: word-wrap;
+        }
+
+        Text {
+            text: description;
+            font-size: 14px;
+            color: ForgejoTheme.text-secondary;
+            wrap: word-wrap;
+        }
+    }
+}
+
+// Involvement Card
+component InvolvementCard inherits Rectangle {
+    in property <string> title: "";
+    in property <string> icon: "";
+
+    width: 140px;
+    height: 100px;
+    background: ForgejoTheme.bg-card;
+    border-radius: ForgejoTheme.radius-md;
+    border-width: 1px;
+    border-color: ForgejoTheme.border;
+
+    animate background { duration: 150ms; }
+
+    states [
+        hovered when touch.has-hover : {
+            background: ForgejoTheme.bg-hover;
+        }
+    ]
+
+    touch := TouchArea {}
+
+    VerticalLayout {
+        padding: ForgejoTheme.spacing-md;
+        spacing: ForgejoTheme.spacing-sm;
+        alignment: center;
+
+        Text {
+            text: icon;
+            font-size: 28px;
+            horizontal-alignment: center;
+        }
+
+        Text {
+            text: title;
+            font-size: 13px;
+            font-weight: 500;
+            color: ForgejoTheme.text-secondary;
+            horizontal-alignment: center;
+        }
+    }
+}
+
+// Footer Link
+component FooterLink inherits Rectangle {
+    in property <string> text: "";
+    callback clicked();
+
+    background: transparent;
+
+    touch := TouchArea {
+        clicked => { root.clicked(); }
+    }
+
+    Text {
+        text: root.text;
+        font-size: 14px;
+        color: touch.has-hover ? ForgejoTheme.primary : ForgejoTheme.text-secondary;
+        vertical-alignment: center;
+
+        animate color { duration: 150ms; }
+    }
+}
+
 // ============================================================================
-// MAIN APPLICATION
+// MAIN APPLICATION - FORGEJO HOMEPAGE
 // ============================================================================
 
 export component AppWindow inherits Window {
-    title: "Slint Modern UI Demo";
-    preferred-width: 900px;
-    preferred-height: 700px;
-    background: Theme.background;
+    title: "Forgejo - Beyond coding. We forge.";
+    background: ForgejoTheme.bg-dark;
+    preferred-width: 1280px;
+    preferred-height: 900px;
 
-    // Properties for interaction
-    in-out property <string> input-text: "Hello, Slint!";
-    in-out property <bool> checkbox-state: false;
-    in-out property <bool> dark-mode: true;
-    in-out property <float> slider-value: 65;
-    in-out property <int> counter: 0;
-    in-out property <string> status-message: "Welcome! Try interacting with the components.";
-    in-out property <string> combo-value: "Option 1";
-    in-out property <int> spinbox-value: 25;
-
-    // Callbacks
-    callback button-clicked();
-    callback increment-counter();
-    callback reset-counter();
-
-    button-clicked => {
-        status-message = "Button clicked! Total clicks: " + counter;
-    }
-
-    increment-counter => {
-        counter += 1;
-        status-message = "Counter incremented to " + counter;
-    }
-
-    reset-counter => {
-        counter = 0;
-        status-message = "Counter has been reset";
-    }
-
-    // Main Layout
+    // Main Layout - fills entire window
     VerticalLayout {
         padding: 0;
         spacing: 0;
+        width: 100%;
+        height: 100%;
 
-        // Header Bar
+        // ====================================================================
+        // HEADER - blends into background like the real site
+        // ====================================================================
         Rectangle {
-            height: 70px;
-            background: @linear-gradient(135deg, Theme.surface 0%, Theme.surface-light 100%);
-
-            // Bottom border gradient
-            Rectangle {
-                y: parent.height - 1px;
-                width: parent.width;
-                height: 1px;
-                background: @linear-gradient(90deg, Theme.primary 0%, Theme.accent-purple 50%, Theme.accent-cyan 100%);
-            }
+            height: 56px;
+            background: ForgejoTheme.bg-dark;
 
             HorizontalLayout {
-                padding-left: Theme.spacing-lg;
-                padding-right: Theme.spacing-lg;
-                spacing: Theme.spacing-md;
+                padding-left: ForgejoTheme.spacing-lg;
+                padding-right: ForgejoTheme.spacing-lg;
+                spacing: ForgejoTheme.spacing-xs;
 
-                // Logo/Title area
+                // Forgejo Logo with mascot icon
                 HorizontalLayout {
-                    spacing: Theme.spacing-md;
+                    spacing: ForgejoTheme.spacing-sm;
 
-                    // App icon
+                    // Small mascot icon - cat face
+                    VerticalLayout {
+                        alignment: center;
+                        Rectangle {
+                            width: 28px;
+                            height: 28px;
+
+                            // Left ear
+                            Rectangle {
+                                x: 2px;
+                                y: 0px;
+                                width: 8px;
+                                height: 10px;
+                                background: #4a4f57;
+                                border-radius: 4px;
+                            }
+
+                            // Right ear
+                            Rectangle {
+                                x: 18px;
+                                y: 0px;
+                                width: 8px;
+                                height: 10px;
+                                background: #4a4f57;
+                                border-radius: 4px;
+                            }
+
+                            // Face
+                            Rectangle {
+                                x: 2px;
+                                y: 6px;
+                                width: 24px;
+                                height: 20px;
+                                background: #4a4f57;
+                                border-radius: 10px;
+
+                                // Left eye
+                                Rectangle {
+                                    x: 5px;
+                                    y: 6px;
+                                    width: 5px;
+                                    height: 6px;
+                                    background: ForgejoTheme.primary;
+                                    border-radius: 2px;
+                                }
+
+                                // Right eye
+                                Rectangle {
+                                    x: 14px;
+                                    y: 6px;
+                                    width: 5px;
+                                    height: 6px;
+                                    background: ForgejoTheme.primary;
+                                    border-radius: 2px;
+                                }
+                            }
+                        }
+                    }
+
+                    VerticalLayout {
+                        alignment: center;
+
+                        // Use a single text for "forgejo" with the "j" highlighted via overlay
+                        Rectangle {
+                            height: 28px;
+                            width: 90px;
+
+                            Text {
+                                text: "forgejo";
+                                font-size: 22px;
+                                font-weight: 400;
+                                color: ForgejoTheme.text-primary;
+                                vertical-alignment: center;
+                            }
+
+                            // Overlay just the "j" with orange
+                            Rectangle {
+                                x: 50px;
+                                y: 0;
+                                width: 12px;
+                                height: 28px;
+                                clip: true;
+
+                                Text {
+                                    x: -50px;
+                                    text: "forgejo";
+                                    font-size: 22px;
+                                    font-weight: 400;
+                                    color: ForgejoTheme.primary;
+                                    vertical-alignment: center;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Rectangle { horizontal-stretch: 1; }
+
+                // Navigation links
+                NavLink { text: "Docs"; }
+                NavLink { text: "News"; }
+                NavLink { text: "Releases"; }
+                NavLink { text: "FAQ"; }
+                NavLink { text: "Donate"; }
+
+                // Source code icon (branch/fork symbol)
+                VerticalLayout {
+                    alignment: center;
                     Rectangle {
-                        width: 40px;
-                        height: 40px;
-                        border-radius: Theme.radius-md;
-                        background: @linear-gradient(135deg, Theme.primary 0%, Theme.accent-purple 100%);
+                        width: 32px;
+                        height: 32px;
+                        border-radius: 6px;
+                        background: transparent;
 
                         Text {
-                            text: "S";
-                            font-size: 22px;
-                            font-weight: 700;
-                            color: white;
+                            text: "⑂";
+                            font-size: 18px;
+                            color: ForgejoTheme.text-secondary;
                             horizontal-alignment: center;
                             vertical-alignment: center;
                         }
                     }
-
-                    VerticalLayout {
-                        alignment: center;
-                        spacing: 2px;
-
-                        Text {
-                            text: "Slint UI Demo";
-                            font-size: 18px;
-                            font-weight: 700;
-                            color: Theme.text-primary;
-                        }
-
-                        Text {
-                            text: "Modern Component Showcase";
-                            font-size: 12px;
-                            color: Theme.text-muted;
-                        }
-                    }
                 }
 
-                Rectangle { horizontal-stretch: 1; }
-
-                // Status badge
-                VerticalLayout {
-                    alignment: center;
-                    Badge {
-                        text: "v1.9";
-                        badge-color: Theme.accent-cyan;
-                    }
-                }
-
-                VerticalLayout {
-                    alignment: center;
-                    Badge {
-                        text: dark-mode ? "Dark Mode" : "Light Mode";
-                        badge-color: dark-mode ? Theme.accent-purple : Theme.accent-orange;
-                    }
-                }
-            }
-
-        // Status Message Bar
-        Rectangle {
-            height: 44px;
-            background: Theme.surface;
-
-            HorizontalLayout {
-                padding-left: Theme.spacing-lg;
-                padding-right: Theme.spacing-lg;
-                spacing: Theme.spacing-sm;
-
+                // RSS icon
                 VerticalLayout {
                     alignment: center;
                     Rectangle {
-                        width: 8px;
-                        height: 8px;
-                        border-radius: 4px;
-                        background: Theme.accent-green;
+                        width: 32px;
+                        height: 32px;
+                        border-radius: 6px;
+                        background: transparent;
 
-                        // Pulse animation placeholder
-                        animate opacity { duration: 1000ms; }
+                        Text {
+                            text: "◉";
+                            font-size: 16px;
+                            color: ForgejoTheme.text-secondary;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
                     }
                 }
 
-                Text {
-                    text: status-message;
-                    font-size: 13px;
-                    color: Theme.text-secondary;
-                    vertical-alignment: center;
+                // Theme toggle (sun/star symbol)
+                VerticalLayout {
+                    alignment: center;
+                    Rectangle {
+                        width: 32px;
+                        height: 32px;
+                        border-radius: 6px;
+                        background: transparent;
+
+                        Text {
+                            text: "✦";
+                            font-size: 16px;
+                            color: ForgejoTheme.text-secondary;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
+                    }
                 }
             }
         }
 
-        // Main Content Area
-        Rectangle {
-            background: Theme.background;
+        // ====================================================================
+        // SCROLLABLE CONTENT
+        // ====================================================================
+        ScrollView {
             vertical-stretch: 1;
+            horizontal-stretch: 1;
 
-            ScrollView {
-                VerticalLayout {
-                    padding: Theme.spacing-lg;
-                    spacing: Theme.spacing-lg;
+            VerticalLayout {
+                spacing: 0;
+                width: parent.visible-width;
 
-                    // Stats Row
+                // ================================================================
+                // HERO SECTION
+                // ================================================================
+                Rectangle {
+                    width: parent.width;
+                    height: 480px;
+                    background: ForgejoTheme.bg-dark;
+
                     HorizontalLayout {
-                        spacing: Theme.spacing-md;
+                        padding-left: ForgejoTheme.spacing-2xl;
+                        padding-right: ForgejoTheme.spacing-2xl;
+                        padding-top: ForgejoTheme.spacing-2xl;
+                        padding-bottom: ForgejoTheme.spacing-2xl;
+                        spacing: ForgejoTheme.spacing-2xl;
 
-                        StatDisplay {
+                        // Left side - Text content
+                        VerticalLayout {
                             horizontal-stretch: 1;
-                            label: "COUNTER";
-                            value: counter;
-                            value-color: Theme.primary-light;
-                        }
+                            spacing: ForgejoTheme.spacing-xs;
+                            alignment: start;
 
-                        StatDisplay {
-                            horizontal-stretch: 1;
-                            label: "SLIDER";
-                            value: Math.round(slider-value) + "%";
-                            value-color: Theme.accent-green;
-                        }
+                            // Main title
+                            Text {
+                                text: "Forgejo";
+                                font-size: 48px;
+                                font-weight: 700;
+                                color: ForgejoTheme.text-primary;
+                            }
 
-                        StatDisplay {
-                            horizontal-stretch: 1;
-                            label: "SPINBOX";
-                            value: spinbox-value;
-                            value-color: Theme.accent-orange;
-                        }
+                            // Tagline - single flowing line
+                            HorizontalLayout {
+                                spacing: 0;
 
-                        StatDisplay {
-                            horizontal-stretch: 1;
-                            label: "STATUS";
-                            value: checkbox-state ? "ON" : "OFF";
-                            value-color: checkbox-state ? Theme.accent-green : Theme.accent-red;
-                        }
-                    }
+                                Text {
+                                    text: "Beyond coding. ";
+                                    font-size: 22px;
+                                    font-weight: 400;
+                                    color: ForgejoTheme.text-secondary;
+                                    vertical-alignment: center;
+                                }
 
-                    // Tab Widget
-                    TabWidget {
-                        Tab {
-                            title: "Controls";
+                                Text {
+                                    text: "We forge.";
+                                    font-size: 22px;
+                                    font-weight: 500;
+                                    color: ForgejoTheme.primary;
+                                    vertical-alignment: center;
+                                }
+                            }
 
-                            ScrollView {
-                                VerticalLayout {
-                                    padding: Theme.spacing-md;
-                                    spacing: Theme.spacing-lg;
+                            Rectangle { height: ForgejoTheme.spacing-md; }
 
-                                    // Buttons Section
-                                    Card {
-                                        card-title: "Interactive Buttons";
+                            // Description - flowing text on same lines
+                            VerticalLayout {
+                                spacing: 2px;
 
-                                        VerticalLayout {
-                                            spacing: Theme.spacing-md;
+                                HorizontalLayout {
+                                    spacing: 0;
+                                    Text {
+                                        text: "Forgejo ";
+                                        font-size: 15px;
+                                        font-weight: 600;
+                                        color: ForgejoTheme.primary;
+                                        vertical-alignment: center;
+                                    }
+                                    Text {
+                                        text: "is a self-hosted lightweight software forge.";
+                                        font-size: 15px;
+                                        color: ForgejoTheme.text-secondary;
+                                        vertical-alignment: center;
+                                    }
+                                }
 
-                                            Text {
-                                                text: "Click the buttons below to interact with the counter:";
-                                                font-size: 13px;
-                                                color: Theme.text-secondary;
-                                                wrap: word-wrap;
-                                            }
+                                Text {
+                                    text: "Easy to install and low maintenance, it just does the job.";
+                                    font-size: 15px;
+                                    color: ForgejoTheme.text-secondary;
+                                }
+                            }
 
-                                            HorizontalLayout {
-                                                spacing: Theme.spacing-md;
+                            Rectangle { height: ForgejoTheme.spacing-sm; }
 
-                                                StyledButton {
-                                                    label: "Click Me";
-                                                    btn-color: Theme.primary;
-                                                    clicked => { root.button-clicked(); }
-                                                }
+                            // Extended description
+                            Text {
+                                text: "Brought to you by an inclusive community under the umbrella of Codeberg e.V., a democratic non-profit organization. Forgejo can be trusted to be exclusively Free Software. You can create an account on Codeberg and other instances or download it to self-host your own. It focuses on security, scaling, federation and privacy.";
+                                font-size: 13px;
+                                color: ForgejoTheme.text-muted;
+                                wrap: word-wrap;
+                                max-width: 480px;
+                            }
 
-                                                StyledButton {
-                                                    label: "+ Increment";
-                                                    btn-color: Theme.accent-green;
-                                                    clicked => { root.increment-counter(); }
-                                                }
+                            Rectangle { height: ForgejoTheme.spacing-lg; }
 
-                                                StyledButton {
-                                                    label: "Reset";
-                                                    btn-color: Theme.accent-red;
-                                                    outline: true;
-                                                    clicked => { root.reset-counter(); }
-                                                }
-                                            }
+                            // CTA Buttons - more compact with icons
+                            HorizontalLayout {
+                                spacing: ForgejoTheme.spacing-sm;
 
-                                            // Counter display
-                                            Rectangle {
-                                                height: 50px;
-                                                background: Theme.surface-light;
-                                                border-radius: Theme.radius-md;
+                                // Get Forgejo button with download icon
+                                Rectangle {
+                                    min-width: 130px;
+                                    height: 40px;
+                                    border-radius: ForgejoTheme.radius-md;
+                                    background: ForgejoTheme.primary;
 
-                                                HorizontalLayout {
-                                                    padding: Theme.spacing-md;
+                                    animate background { duration: 150ms; }
 
-                                                    Text {
-                                                        text: "Current Count:";
-                                                        font-size: 14px;
-                                                        color: Theme.text-secondary;
-                                                        vertical-alignment: center;
-                                                    }
+                                    states [
+                                        pressed when btn1-touch.pressed : {
+                                            background: ForgejoTheme.primary-dark;
+                                        }
+                                        hovered when btn1-touch.has-hover : {
+                                            background: ForgejoTheme.primary-light;
+                                        }
+                                    ]
 
-                                                    Rectangle { horizontal-stretch: 1; }
+                                    btn1-touch := TouchArea {}
 
-                                                    Text {
-                                                        text: counter;
-                                                        font-size: 28px;
-                                                        font-weight: 700;
-                                                        color: Theme.primary-light;
-                                                        vertical-alignment: center;
-                                                    }
-                                                }
-                                            }
+                                    HorizontalLayout {
+                                        padding-left: ForgejoTheme.spacing-md;
+                                        padding-right: ForgejoTheme.spacing-md;
+                                        spacing: ForgejoTheme.spacing-xs;
+
+                                        Text {
+                                            text: "↓";
+                                            font-size: 14px;
+                                            font-weight: 700;
+                                            color: white;
+                                            vertical-alignment: center;
+                                        }
+
+                                        Text {
+                                            text: "Get Forgejo";
+                                            font-size: 14px;
+                                            font-weight: 600;
+                                            color: white;
+                                            vertical-alignment: center;
                                         }
                                     }
+                                }
 
-                                    // Text Input Section
-                                    Card {
-                                        card-title: "Text Input";
+                                // Try now button with play icon
+                                Rectangle {
+                                    min-width: 110px;
+                                    height: 40px;
+                                    border-radius: ForgejoTheme.radius-md;
+                                    background: transparent;
+                                    border-width: 2px;
+                                    border-color: ForgejoTheme.primary;
 
-                                        VerticalLayout {
-                                            spacing: Theme.spacing-md;
+                                    animate background { duration: 150ms; }
 
-                                            LineEdit {
-                                                text <=> input-text;
-                                                placeholder-text: "Type something here...";
-                                            }
-
-                                            Rectangle {
-                                                height: 40px;
-                                                background: Theme.surface-light;
-                                                border-radius: Theme.radius-md;
-
-                                                HorizontalLayout {
-                                                    padding-left: Theme.spacing-md;
-                                                    padding-right: Theme.spacing-md;
-
-                                                    Text {
-                                                        text: "You typed: ";
-                                                        font-size: 13px;
-                                                        color: Theme.text-muted;
-                                                        vertical-alignment: center;
-                                                    }
-
-                                                    Text {
-                                                        text: input-text;
-                                                        font-size: 13px;
-                                                        font-weight: 600;
-                                                        color: Theme.text-primary;
-                                                        vertical-alignment: center;
-                                                        overflow: elide;
-                                                    }
-                                                }
-                                            }
+                                    states [
+                                        pressed when btn2-touch.pressed : {
+                                            background: ForgejoTheme.primary.with-alpha(0.2);
                                         }
-                                    }
+                                        hovered when btn2-touch.has-hover : {
+                                            background: ForgejoTheme.primary.with-alpha(0.1);
+                                        }
+                                    ]
 
-                                    // Toggle Section
-                                    Card {
-                                        card-title: "Toggle Switch";
+                                    btn2-touch := TouchArea {}
 
-                                        HorizontalLayout {
-                                            spacing: Theme.spacing-lg;
+                                    HorizontalLayout {
+                                        padding-left: ForgejoTheme.spacing-md;
+                                        padding-right: ForgejoTheme.spacing-md;
+                                        spacing: ForgejoTheme.spacing-xs;
 
-                                            CheckBox {
-                                                text: "Enable Feature";
-                                                checked <=> checkbox-state;
-                                            }
+                                        Text {
+                                            text: "▷";
+                                            font-size: 12px;
+                                            font-weight: 700;
+                                            color: ForgejoTheme.primary;
+                                            vertical-alignment: center;
+                                        }
 
-                                            Rectangle { horizontal-stretch: 1; }
-
-                                            Badge {
-                                                text: checkbox-state ? "ENABLED" : "DISABLED";
-                                                badge-color: checkbox-state ? Theme.accent-green : Theme.accent-red;
-                                            }
+                                        Text {
+                                            text: "Try now";
+                                            font-size: 14px;
+                                            font-weight: 600;
+                                            color: ForgejoTheme.primary;
+                                            vertical-alignment: center;
                                         }
                                     }
                                 }
                             }
                         }
 
-                        Tab {
-                            title: "Sliders & Inputs";
+                        // Right side - Mascot
+                        Rectangle {
+                            width: 350px;
+                            background: transparent;
 
-                            ScrollView {
-                                VerticalLayout {
-                                    padding: Theme.spacing-md;
-                                    spacing: Theme.spacing-lg;
+                            VerticalLayout {
+                                alignment: center;
 
-                                    // Slider Section
-                                    Card {
-                                        card-title: "Slider Control";
+                                // Mascot with glow effect
+                                Rectangle {
+                                    width: 320px;
+                                    height: 320px;
+                                    background: @radial-gradient(circle, ForgejoTheme.primary.with-alpha(0.12) 0%, transparent 60%);
 
-                                        VerticalLayout {
-                                            spacing: Theme.spacing-md;
+                                    // Mascot container
+                                    Rectangle {
+                                        x: 60px;
+                                        y: 40px;
+                                        width: 200px;
+                                        height: 220px;
 
-                                            Slider {
-                                                value <=> slider-value;
-                                                minimum: 0;
-                                                maximum: 100;
-                                            }
+                                        // Left ear
+                                        Rectangle {
+                                            x: 20px;
+                                            y: 0px;
+                                            width: 50px;
+                                            height: 70px;
+                                            background: #4a4f57;
+                                            border-radius: 25px;
 
-                                            HorizontalLayout {
-                                                Text {
-                                                    text: "0";
-                                                    font-size: 12px;
-                                                    color: Theme.text-muted;
-                                                }
-                                                Rectangle { horizontal-stretch: 1; }
-                                                Text {
-                                                    text: Math.round(slider-value) + "%";
-                                                    font-size: 14px;
-                                                    font-weight: 600;
-                                                    color: Theme.primary-light;
-                                                }
-                                                Rectangle { horizontal-stretch: 1; }
-                                                Text {
-                                                    text: "100";
-                                                    font-size: 12px;
-                                                    color: Theme.text-muted;
-                                                }
-                                            }
-
-                                            // Progress visualization
-                                            VerticalLayout {
-                                                spacing: Theme.spacing-sm;
-
-                                                Text {
-                                                    text: "Progress Visualization";
-                                                    font-size: 12px;
-                                                    color: Theme.text-muted;
-                                                }
-
-                                                ProgressBar {
-                                                    value: slider-value;
-                                                    progress-color: Theme.accent-green;
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    // SpinBox Section
-                                    Card {
-                                        card-title: "Numeric Input";
-
-                                        HorizontalLayout {
-                                            spacing: Theme.spacing-lg;
-                                            alignment: start;
-
-                                            VerticalLayout {
-                                                spacing: Theme.spacing-sm;
-
-                                                Text {
-                                                    text: "SpinBox (0-100)";
-                                                    font-size: 12px;
-                                                    color: Theme.text-muted;
-                                                }
-
-                                                SpinBox {
-                                                    value <=> spinbox-value;
-                                                    minimum: 0;
-                                                    maximum: 100;
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    // ComboBox Section
-                                    Card {
-                                        card-title: "Dropdown Selection";
-
-                                        VerticalLayout {
-                                            spacing: Theme.spacing-md;
-
-                                            HorizontalLayout {
-                                                spacing: Theme.spacing-lg;
-
-                                                VerticalLayout {
-                                                    spacing: Theme.spacing-sm;
-
-                                                    Text {
-                                                        text: "Select an option:";
-                                                        font-size: 12px;
-                                                        color: Theme.text-muted;
-                                                    }
-
-                                                    ComboBox {
-                                                        model: ["Option 1", "Option 2", "Option 3", "Option 4"];
-                                                        current-value <=> combo-value;
-                                                    }
-                                                }
-                                            }
-
+                                            // Inner ear
                                             Rectangle {
+                                                x: 12px;
+                                                y: 15px;
+                                                width: 26px;
                                                 height: 40px;
-                                                background: Theme.surface-light;
-                                                border-radius: Theme.radius-md;
-
-                                                HorizontalLayout {
-                                                    padding-left: Theme.spacing-md;
-                                                    padding-right: Theme.spacing-md;
-
-                                                    Text {
-                                                        text: "Selected: ";
-                                                        font-size: 13px;
-                                                        color: Theme.text-muted;
-                                                        vertical-alignment: center;
-                                                    }
-
-                                                    Badge {
-                                                        text: combo-value;
-                                                        badge-color: Theme.primary;
-                                                    }
-                                                }
+                                                background: #3a3f47;
+                                                border-radius: 13px;
                                             }
                                         }
-                                    }
-                                }
-                            }
-                        }
 
-                        Tab {
-                            title: "Visual Showcase";
+                                        // Right ear
+                                        Rectangle {
+                                            x: 130px;
+                                            y: 0px;
+                                            width: 50px;
+                                            height: 70px;
+                                            background: #4a4f57;
+                                            border-radius: 25px;
 
-                            ScrollView {
-                                VerticalLayout {
-                                    padding: Theme.spacing-md;
-                                    spacing: Theme.spacing-lg;
-
-                                    // Color Palette
-                                    Card {
-                                        card-title: "Color Palette";
-
-                                        VerticalLayout {
-                                            spacing: Theme.spacing-md;
-
-                                            Text {
-                                                text: "Hover over colors to see the highlight effect:";
-                                                font-size: 13px;
-                                                color: Theme.text-secondary;
-                                            }
-
-                                            HorizontalLayout {
-                                                spacing: Theme.spacing-md;
-                                                alignment: start;
-
-                                                ColorSwatch {
-                                                    swatch-color: Theme.primary;
-                                                    color-name: "Primary";
-                                                }
-
-                                                ColorSwatch {
-                                                    swatch-color: Theme.accent-purple;
-                                                    color-name: "Purple";
-                                                }
-
-                                                ColorSwatch {
-                                                    swatch-color: Theme.accent-cyan;
-                                                    color-name: "Cyan";
-                                                }
-
-                                                ColorSwatch {
-                                                    swatch-color: Theme.accent-green;
-                                                    color-name: "Green";
-                                                }
-
-                                                ColorSwatch {
-                                                    swatch-color: Theme.accent-orange;
-                                                    color-name: "Orange";
-                                                }
-
-                                                ColorSwatch {
-                                                    swatch-color: Theme.accent-pink;
-                                                    color-name: "Pink";
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    // Typography
-                                    Card {
-                                        card-title: "Typography Scale";
-
-                                        VerticalLayout {
-                                            spacing: Theme.spacing-md;
-
-                                            Text {
-                                                text: "Display Heading";
-                                                font-size: 32px;
-                                                font-weight: 700;
-                                                color: Theme.text-primary;
-                                            }
-
-                                            Text {
-                                                text: "Section Title";
-                                                font-size: 24px;
-                                                font-weight: 600;
-                                                color: Theme.text-primary;
-                                            }
-
-                                            Text {
-                                                text: "Card Heading";
-                                                font-size: 18px;
-                                                font-weight: 600;
-                                                color: Theme.text-primary;
-                                            }
-
-                                            Text {
-                                                text: "Body text appears in this style. It's designed for readability and comfortable reading at typical screen distances.";
-                                                font-size: 14px;
-                                                color: Theme.text-secondary;
-                                                wrap: word-wrap;
-                                            }
-
-                                            Text {
-                                                text: "CAPTION / LABEL TEXT";
-                                                font-size: 11px;
-                                                font-weight: 600;
-                                                color: Theme.text-muted;
-                                                letter-spacing: 0.5px;
-                                            }
-
-                                            HorizontalLayout {
-                                                spacing: Theme.spacing-md;
-
-                                                Text {
-                                                    text: "Colored: Primary";
-                                                    font-size: 14px;
-                                                    font-weight: 600;
-                                                    color: Theme.primary-light;
-                                                }
-
-                                                Text {
-                                                    text: "Success";
-                                                    font-size: 14px;
-                                                    font-weight: 600;
-                                                    color: Theme.accent-green;
-                                                }
-
-                                                Text {
-                                                    text: "Warning";
-                                                    font-size: 14px;
-                                                    font-weight: 600;
-                                                    color: Theme.accent-orange;
-                                                }
-
-                                                Text {
-                                                    text: "Error";
-                                                    font-size: 14px;
-                                                    font-weight: 600;
-                                                    color: Theme.accent-red;
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    // Progress Indicators
-                                    Card {
-                                        card-title: "Progress Indicators";
-
-                                        VerticalLayout {
-                                            spacing: Theme.spacing-lg;
-
-                                            Text {
-                                                text: "These progress bars are linked to the slider value:";
-                                                font-size: 13px;
-                                                color: Theme.text-secondary;
-                                            }
-
-                                            VerticalLayout {
-                                                spacing: Theme.spacing-sm;
-
-                                                HorizontalLayout {
-                                                    Text {
-                                                        text: "Default";
-                                                        font-size: 12px;
-                                                        color: Theme.text-muted;
-                                                        min-width: 60px;
-                                                    }
-                                                    ProgressBar {
-                                                        horizontal-stretch: 1;
-                                                        value: slider-value;
-                                                        progress-color: Theme.accent-green;
-                                                    }
-                                                }
-                                            }
-
-                                            VerticalLayout {
-                                                spacing: Theme.spacing-sm;
-
-                                                HorizontalLayout {
-                                                    Text {
-                                                        text: "Primary";
-                                                        font-size: 12px;
-                                                        color: Theme.text-muted;
-                                                        min-width: 60px;
-                                                    }
-                                                    ProgressBar {
-                                                        horizontal-stretch: 1;
-                                                        value: slider-value;
-                                                        progress-color: Theme.primary;
-                                                    }
-                                                }
-                                            }
-
-                                            VerticalLayout {
-                                                spacing: Theme.spacing-sm;
-
-                                                HorizontalLayout {
-                                                    Text {
-                                                        text: "Warning";
-                                                        font-size: 12px;
-                                                        color: Theme.text-muted;
-                                                        min-width: 60px;
-                                                    }
-                                                    ProgressBar {
-                                                        horizontal-stretch: 1;
-                                                        value: slider-value;
-                                                        progress-color: Theme.accent-orange;
-                                                    }
-                                                }
-                                            }
-
-                                            VerticalLayout {
-                                                spacing: Theme.spacing-sm;
-
-                                                HorizontalLayout {
-                                                    Text {
-                                                        text: "Danger";
-                                                        font-size: 12px;
-                                                        color: Theme.text-muted;
-                                                        min-width: 60px;
-                                                    }
-                                                    ProgressBar {
-                                                        horizontal-stretch: 1;
-                                                        value: slider-value;
-                                                        progress-color: Theme.accent-red;
-                                                    }
-                                                }
-                                            }
-
-                                            // Big progress display
+                                            // Inner ear
                                             Rectangle {
-                                                height: 80px;
-                                                background: Theme.surface-light;
-                                                border-radius: Theme.radius-md;
+                                                x: 12px;
+                                                y: 15px;
+                                                width: 26px;
+                                                height: 40px;
+                                                background: #3a3f47;
+                                                border-radius: 13px;
+                                            }
+                                        }
 
-                                                HorizontalLayout {
-                                                    padding: Theme.spacing-md;
-                                                    spacing: Theme.spacing-lg;
+                                        // Head/face
+                                        Rectangle {
+                                            x: 10px;
+                                            y: 45px;
+                                            width: 180px;
+                                            height: 160px;
+                                            background: #4a4f57;
+                                            border-radius: 80px;
 
-                                                    Text {
-                                                        text: Math.round(slider-value) + "%";
-                                                        font-size: 36px;
-                                                        font-weight: 700;
-                                                        color: Theme.primary-light;
-                                                        vertical-alignment: center;
-                                                        min-width: 100px;
-                                                    }
+                                            // Face inner shadow
+                                            Rectangle {
+                                                x: 15px;
+                                                y: 20px;
+                                                width: 150px;
+                                                height: 120px;
+                                                background: #3d4249;
+                                                border-radius: 60px;
+                                            }
 
-                                                    VerticalLayout {
-                                                        spacing: Theme.spacing-sm;
-                                                        vertical-stretch: 1;
-                                                        alignment: center;
+                                            // Left eye glow
+                                            Rectangle {
+                                                x: 35px;
+                                                y: 50px;
+                                                width: 40px;
+                                                height: 40px;
+                                                background: @radial-gradient(circle, ForgejoTheme.primary.with-alpha(0.6) 0%, transparent 70%);
+                                                border-radius: 20px;
+                                            }
 
-                                                        Text {
-                                                            text: "Overall Progress";
-                                                            font-size: 14px;
-                                                            font-weight: 600;
-                                                            color: Theme.text-primary;
-                                                        }
+                                            // Left eye
+                                            Rectangle {
+                                                x: 42px;
+                                                y: 55px;
+                                                width: 26px;
+                                                height: 30px;
+                                                background: ForgejoTheme.primary;
+                                                border-radius: 13px;
 
-                                                        Rectangle {
-                                                            height: 12px;
-                                                            background: Theme.surface;
-                                                            border-radius: 6px;
-                                                            clip: true;
+                                                // Eye highlight
+                                                Rectangle {
+                                                    x: 6px;
+                                                    y: 6px;
+                                                    width: 8px;
+                                                    height: 8px;
+                                                    background: white.with-alpha(0.8);
+                                                    border-radius: 4px;
+                                                }
+                                            }
 
-                                                            Rectangle {
-                                                                width: parent.width * slider-value / 100;
-                                                                height: parent.height;
-                                                                border-radius: 6px;
-                                                                background: @linear-gradient(90deg, Theme.primary 0%, Theme.accent-cyan 100%);
+                                            // Right eye glow
+                                            Rectangle {
+                                                x: 105px;
+                                                y: 50px;
+                                                width: 40px;
+                                                height: 40px;
+                                                background: @radial-gradient(circle, ForgejoTheme.primary.with-alpha(0.6) 0%, transparent 70%);
+                                                border-radius: 20px;
+                                            }
 
-                                                                animate width { duration: 200ms; easing: ease-out; }
-                                                            }
-                                                        }
+                                            // Right eye
+                                            Rectangle {
+                                                x: 112px;
+                                                y: 55px;
+                                                width: 26px;
+                                                height: 30px;
+                                                background: ForgejoTheme.primary;
+                                                border-radius: 13px;
 
-                                                        Text {
-                                                            text: "Linked to slider control";
-                                                            font-size: 11px;
-                                                            color: Theme.text-muted;
-                                                        }
-                                                    }
+                                                // Eye highlight
+                                                Rectangle {
+                                                    x: 6px;
+                                                    y: 6px;
+                                                    width: 8px;
+                                                    height: 8px;
+                                                    background: white.with-alpha(0.8);
+                                                    border-radius: 4px;
+                                                }
+                                            }
+
+                                            // Nose
+                                            Rectangle {
+                                                x: 82px;
+                                                y: 95px;
+                                                width: 16px;
+                                                height: 12px;
+                                                background: #2d3139;
+                                                border-radius: 6px;
+                                            }
+
+                                            // Mouth area
+                                            Rectangle {
+                                                x: 70px;
+                                                y: 110px;
+                                                width: 40px;
+                                                height: 20px;
+                                                background: #3a3f47;
+                                                border-radius: 10px;
+                                            }
+                                        }
+
+                                        // Glowing forge/anvil being held
+                                        Rectangle {
+                                            x: 55px;
+                                            y: 170px;
+                                            width: 90px;
+                                            height: 50px;
+
+                                            // Glow effect
+                                            Rectangle {
+                                                x: -15px;
+                                                y: -10px;
+                                                width: 120px;
+                                                height: 70px;
+                                                background: @radial-gradient(circle, ForgejoTheme.primary.with-alpha(0.4) 0%, transparent 70%);
+                                                border-radius: 35px;
+                                            }
+
+                                            // Anvil/forge object
+                                            Rectangle {
+                                                x: 15px;
+                                                y: 10px;
+                                                width: 60px;
+                                                height: 35px;
+                                                background: #2d3139;
+                                                border-radius: 8px;
+                                                border-width: 2px;
+                                                border-color: ForgejoTheme.primary.with-alpha(0.7);
+
+                                                // Glowing core
+                                                Rectangle {
+                                                    x: 15px;
+                                                    y: 8px;
+                                                    width: 30px;
+                                                    height: 18px;
+                                                    background: @linear-gradient(180deg, ForgejoTheme.primary 0%, #CC5200 100%);
+                                                    border-radius: 5px;
                                                 }
                                             }
                                         }
@@ -1024,53 +892,325 @@ export component AppWindow inherits Window {
                         }
                     }
                 }
-            }
 
-        // Footer
-        Rectangle {
-            height: 48px;
-            background: Theme.surface;
-
-            // Top border
-            Rectangle {
-                width: parent.width;
-                height: 1px;
-                background: Theme.border;
-            }
-
-            HorizontalLayout {
-                padding-left: Theme.spacing-lg;
-                padding-right: Theme.spacing-lg;
-
-                Text {
-                    text: "Built with Slint v1.9";
-                    font-size: 12px;
-                    color: Theme.text-muted;
-                    vertical-alignment: center;
-                }
-
-                Rectangle { horizontal-stretch: 1; }
-
-                HorizontalLayout {
-                    spacing: Theme.spacing-sm;
-                    alignment: center;
+                // ================================================================
+                // FEATURES SECTION
+                // ================================================================
+                Rectangle {
+                    width: parent.width;
+                    height: 650px;
+                    background: ForgejoTheme.bg-surface;
 
                     VerticalLayout {
-                        alignment: center;
-                        Rectangle {
-                            width: 8px;
-                            height: 8px;
-                            border-radius: 4px;
-                            background: Theme.accent-green;
+                        padding: ForgejoTheme.spacing-2xl;
+                        spacing: ForgejoTheme.spacing-xl;
+
+                        // Section header - styled like Forgejo
+                        VerticalLayout {
+                            spacing: ForgejoTheme.spacing-sm;
+                            alignment: center;
+
+                            HorizontalLayout {
+                                alignment: center;
+                                spacing: 8px;
+
+                                Text {
+                                    text: "Forge great software with";
+                                    font-size: 32px;
+                                    font-weight: 600;
+                                    color: ForgejoTheme.text-primary;
+                                    vertical-alignment: center;
+                                }
+
+                                Text {
+                                    text: "Forgejo";
+                                    font-size: 32px;
+                                    font-weight: 600;
+                                    color: ForgejoTheme.primary;
+                                    vertical-alignment: center;
+                                }
+                            }
+                        }
+
+                        // Feature cards grid - Row 1
+                        HorizontalLayout {
+                            spacing: ForgejoTheme.spacing-lg;
+                            alignment: center;
+
+                            FeatureCard {
+                                horizontal-stretch: 1;
+                                max-width: 350px;
+                                title: "Simple project management";
+                                description: "Collaborate with your team, create issues, manage pull requests, and review code together for maximum productivity.";
+                                icon: "📋";
+                            }
+
+                            FeatureCard {
+                                horizontal-stretch: 1;
+                                max-width: 350px;
+                                title: "Self-hosted alternative";
+                                description: "Free yourself from proprietary platforms. Host your code on your own infrastructure with full control.";
+                                icon: "🏠";
+                            }
+
+                            FeatureCard {
+                                horizontal-stretch: 1;
+                                max-width: 350px;
+                                title: "Easy to install";
+                                description: "Get started in minutes. Minimal server expertise required with simple installation and low maintenance.";
+                                icon: "⚡";
+                            }
+                        }
+
+                        // Feature cards grid - Row 2
+                        HorizontalLayout {
+                            spacing: ForgejoTheme.spacing-lg;
+                            alignment: center;
+
+                            FeatureCard {
+                                horizontal-stretch: 1;
+                                max-width: 350px;
+                                title: "Lightweight & performant";
+                                description: "Runs on minimal resources. Significantly lighter than competitors while maintaining full functionality.";
+                                icon: "🚀";
+                            }
+
+                            FeatureCard {
+                                horizontal-stretch: 1;
+                                max-width: 350px;
+                                title: "100% Free Software";
+                                description: "Guaranteed to remain free and open source forever. No vendor lock-in, no proprietary components.";
+                                icon: "🔓";
+                            }
+
+                            FeatureCard {
+                                horizontal-stretch: 1;
+                                max-width: 350px;
+                                title: "Community driven";
+                                description: "Beyond coding, we forge ahead. Decentralized, collaborative innovation by the community.";
+                                icon: "🤝";
+                            }
                         }
                     }
+                }
 
-                    Text {
-                        text: "Server Running on :3000";
-                        font-size: 12px;
-                        font-weight: 600;
-                        color: Theme.accent-green;
-                        vertical-alignment: center;
+                // ================================================================
+                // GET INVOLVED SECTION
+                // ================================================================
+                Rectangle {
+                    width: parent.width;
+                    height: 350px;
+                    background: ForgejoTheme.bg-dark;
+
+                    VerticalLayout {
+                        padding: ForgejoTheme.spacing-2xl;
+                        spacing: ForgejoTheme.spacing-xl;
+
+                        // Section header
+                        VerticalLayout {
+                            spacing: ForgejoTheme.spacing-sm;
+                            alignment: center;
+
+                            Text {
+                                text: "Get Involved";
+                                font-size: 36px;
+                                font-weight: 700;
+                                color: ForgejoTheme.text-primary;
+                                horizontal-alignment: center;
+                            }
+
+                            Text {
+                                text: "Join our community and help shape the future of Forgejo";
+                                font-size: 16px;
+                                color: ForgejoTheme.text-secondary;
+                                horizontal-alignment: center;
+                            }
+                        }
+
+                        // Involvement options
+                        HorizontalLayout {
+                            alignment: center;
+                            spacing: ForgejoTheme.spacing-lg;
+
+                            InvolvementCard {
+                                title: "Localization";
+                                icon: "🌍";
+                            }
+
+                            InvolvementCard {
+                                title: "Code";
+                                icon: "💻";
+                            }
+
+                            InvolvementCard {
+                                title: "Federation";
+                                icon: "🔗";
+                            }
+
+                            InvolvementCard {
+                                title: "UX Design";
+                                icon: "🎨";
+                            }
+
+                            InvolvementCard {
+                                title: "Documentation";
+                                icon: "📚";
+                            }
+
+                            InvolvementCard {
+                                title: "Governance";
+                                icon: "⚖️";
+                            }
+                        }
+
+                        // Join button
+                        HorizontalLayout {
+                            alignment: center;
+
+                            PrimaryButton {
+                                label: "Join the Community";
+                            }
+                        }
+                    }
+                }
+
+                // ================================================================
+                // FOOTER
+                // ================================================================
+                Rectangle {
+                    width: parent.width;
+                    height: 280px;
+                    background: ForgejoTheme.bg-surface;
+
+                    // Top border
+                    Rectangle {
+                        width: parent.width;
+                        height: 1px;
+                        background: ForgejoTheme.border;
+                    }
+
+                    VerticalLayout {
+                        padding: ForgejoTheme.spacing-2xl;
+                        spacing: ForgejoTheme.spacing-xl;
+
+                        // Footer columns
+                        HorizontalLayout {
+                            spacing: ForgejoTheme.spacing-2xl;
+
+                            // Column 1 - About
+                            VerticalLayout {
+                                horizontal-stretch: 1;
+                                spacing: ForgejoTheme.spacing-md;
+
+                                Text {
+                                    text: "About";
+                                    font-size: 14px;
+                                    font-weight: 600;
+                                    color: ForgejoTheme.text-primary;
+                                }
+
+                                FooterLink { text: "About Forgejo"; }
+                                FooterLink { text: "FAQ"; }
+                                FooterLink { text: "Compare"; }
+                                FooterLink { text: "Sustainability"; }
+                            }
+
+                            // Column 2 - Resources
+                            VerticalLayout {
+                                horizontal-stretch: 1;
+                                spacing: ForgejoTheme.spacing-md;
+
+                                Text {
+                                    text: "Resources";
+                                    font-size: 14px;
+                                    font-weight: 600;
+                                    color: ForgejoTheme.text-primary;
+                                }
+
+                                FooterLink { text: "Documentation"; }
+                                FooterLink { text: "Download"; }
+                                FooterLink { text: "Releases"; }
+                                FooterLink { text: "Roadmap"; }
+                            }
+
+                            // Column 3 - Community
+                            VerticalLayout {
+                                horizontal-stretch: 1;
+                                spacing: ForgejoTheme.spacing-md;
+
+                                Text {
+                                    text: "Community";
+                                    font-size: 14px;
+                                    font-weight: 600;
+                                    color: ForgejoTheme.text-primary;
+                                }
+
+                                FooterLink { text: "Matrix Chat"; }
+                                FooterLink { text: "Mastodon"; }
+                                FooterLink { text: "Contribute"; }
+                                FooterLink { text: "Governance"; }
+                            }
+
+                            // Column 4 - Legal
+                            VerticalLayout {
+                                horizontal-stretch: 1;
+                                spacing: ForgejoTheme.spacing-md;
+
+                                Text {
+                                    text: "Legal";
+                                    font-size: 14px;
+                                    font-weight: 600;
+                                    color: ForgejoTheme.text-primary;
+                                }
+
+                                FooterLink { text: "Privacy Policy"; }
+                                FooterLink { text: "Terms of Service"; }
+                                FooterLink { text: "Code of Conduct"; }
+                                FooterLink { text: "Licenses"; }
+                            }
+                        }
+
+                        // Copyright
+                        Rectangle {
+                            height: 1px;
+                            background: ForgejoTheme.border;
+                        }
+
+                        HorizontalLayout {
+                            Text {
+                                text: "© 2024 Forgejo. A community-driven software forge.";
+                                font-size: 13px;
+                                color: ForgejoTheme.text-muted;
+                                vertical-alignment: center;
+                            }
+
+                            Rectangle { horizontal-stretch: 1; }
+
+                            HorizontalLayout {
+                                spacing: ForgejoTheme.spacing-md;
+
+                                Text {
+                                    text: "Built with Slint";
+                                    font-size: 13px;
+                                    color: ForgejoTheme.text-muted;
+                                    vertical-alignment: center;
+                                }
+
+                                Rectangle {
+                                    width: 6px;
+                                    height: 6px;
+                                    border-radius: 3px;
+                                    background: ForgejoTheme.accent-green;
+                                }
+
+                                Text {
+                                    text: "Server Running";
+                                    font-size: 13px;
+                                    color: ForgejoTheme.accent-green;
+                                    vertical-alignment: center;
+                                }
+                            }
+                        }
                     }
                 }
             }
