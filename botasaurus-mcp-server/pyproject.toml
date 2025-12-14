@@ -1,0 +1,21 @@
+[project]
+name = "botasaurus-mcp-server"
+version = "1.0.0"
+description = "MCP server for web scraping using Botasaurus - bypass anti-bot measures and fetch web content reliably"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp>=1.0.0",
+    "botasaurus>=4.0.0",
+]
+
+[project.scripts]
+botasaurus-mcp = "botasaurus_server:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_backend"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+py-modules = ["botasaurus_server"]
