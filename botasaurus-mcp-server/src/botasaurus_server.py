@@ -11,10 +11,7 @@ from typing import Optional
 from mcp.server.fastmcp import FastMCP
 
 # Initialize MCP server
-mcp = FastMCP(
-    name="Botasaurus Web Scraper",
-    version="1.0.0"
-)
+mcp = FastMCP("Botasaurus Web Scraper")
 
 
 @mcp.tool()
